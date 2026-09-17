@@ -1,0 +1,74 @@
+@model Mark1.Models.ViewModels.AccountOverviewViewModel
+@{
+    ViewData["Title"] = Localizer["AccountOverview_Title"];
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="page-title">@Localizer["AccountOverview_Title"]</h1>
+    <form method="get" class="d-flex gap-2">
+        <select name="period" class="form-select" onchange="this.form.submit()">
+            @foreach (var option in Model.PeriodOptions)
+            {
+                <option value="@option.Value" selected="@(Model.SelectedPeriod == option.Value)">@option.Label</option>
+            }
+        </select>
+    </form>
+</div>
+
+<div class="stat-tiles">
+    <div class="stat-tile">
+        <div class="stat-label">@Localizer["AccountOverview_UsdOnly"]</div>
+        <div class="stat-value">$@Model.GrandTotalUsdOnly.ToString("N2")</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-label">@Localizer["AccountOverview_CrcOnly"]</div>
+        <div class="stat-value">&#8353;@Model.GrandTotalCrcOnly.ToString("N2")</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-label">@Localizer["AccountOverview_AllUsd"]</div>
+        <div class="stat-value">$@Model.GrandTotalUsdMixed.ToString("N2")</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-label">@Localizer["AccountOverview_AllCrc"]</div>
+        <div class="stat-value">&#8353;@Model.GrandTotalCrcMixed.ToString("N2")</div>
+    </div>
+</div>
+
+<div class="accordion mt-4" id="accountAccordion">
+    @for (var i = 0; i < Model.AccountCards.Count; i++)
+    {
+        var card = Model.AccountCards[i];
+        var collapseId = $"account-{i}";
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button @(i > 0 ? "collapsed" : "")" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId">
+                    @card.AccountName
+                    <span class="ms-auto account-net @(card.NetMixedUsd < 0 ? "amount-expense" : "amount-income")">
+                        $@card.NetMixedUsd.ToString("N2")
+                    </span>
+                </button>
+            </h2>
+            <div id="@collapseId" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#accountAccordion">
+                <div class="accordion-body row">
+                    <div class="col-4">
+                        <div class="text-muted">@Localizer["AccountOverview_UsdNet"]</div>
+                        <div>$@card.NetUsd.ToString("N2")</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted">@Localizer["AccountOverview_CrcNet"]</div>
+                        <div>&#8353;@card.NetCrc.ToString("N2")</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted">@Localizer["AccountOverview_CombinedUsd"]</div>
+                        <div>$@card.NetMixedUsd.ToString("N2")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.AccountCards.Any())
+{
+    <p class="text-muted mt-3">@Localizer["AccountOverview_NoAccounts"]</p>
+}

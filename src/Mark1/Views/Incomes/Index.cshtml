@@ -1,0 +1,88 @@
+@model Mark1.Models.ViewModels.TransactionFilterViewModel<Mark1.Models.Income>
+@{
+    ViewData["Title"] = Localizer["Incomes_Title"];
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="page-title">@Localizer["Incomes_Title"]</h1>
+    <a asp-action="Create" class="btn btn-primary">@Localizer["Incomes_Add"]</a>
+</div>
+
+<ul class="nav nav-pills month-tabs mb-3">
+    @foreach (var tab in Model.MonthTabs)
+    {
+        <li class="nav-item">
+            <a class="nav-link @(Model.Month == tab.Value ? "active" : "")" asp-action="Index" asp-route-month="@tab.Value">@tab.Label</a>
+        </li>
+    }
+</ul>
+
+<form method="get" class="filter-bar row g-2 mb-3">
+    <input type="hidden" name="month" value="@Model.Month" />
+    <div class="col-auto">
+        <input type="date" name="dateFrom" class="form-control" value="@Model.DateFrom?.ToString("yyyy-MM-dd")" placeholder="@Localizer["Common_Date"]" />
+    </div>
+    <div class="col-auto">
+        <input type="date" name="dateTo" class="form-control" value="@Model.DateTo?.ToString("yyyy-MM-dd")" placeholder="@Localizer["Common_Date"]" />
+    </div>
+    <div class="col-auto">
+        <select name="categoryId" class="form-select" asp-items="Model.CategoryOptions">
+            <option value="">@Localizer["Common_AllCategories"]</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="accountId" class="form-select" asp-items="Model.AccountOptions">
+            <option value="">@Localizer["Common_AllAccounts"]</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="currency" class="form-select" asp-items="Html.GetEnumSelectList<Mark1.Models.Currency>()">
+            <option value="">@Localizer["Common_AllCurrencies"]</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">@Localizer["Common_Filter"]</button>
+    </div>
+</form>
+
+<table class="table table-hover income-table">
+    <thead>
+        <tr>
+            <th>@Localizer["Common_Date"]</th>
+            <th>@Localizer["Common_Description"]</th>
+            <th>@Localizer["Common_Category"]</th>
+            <th>@Localizer["Common_Account"]</th>
+            <th class="text-end">@Localizer["Common_Amount"]</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var income in Model.Items)
+        {
+            <tr>
+                <td>@income.Date.ToString("MMM d, yyyy")</td>
+                <td>
+                    @income.Description
+                    @if (income.RepeatsMonthly)
+                    {
+                        <span class="badge bg-secondary">@Localizer["Common_RepeatsMonthly"]</span>
+                    }
+                </td>
+                <td>@income.Category?.Name</td>
+                <td>@income.Account?.Name</td>
+                <td class="text-end amount-income">@income.Amount.ToString("N2") @income.Currency</td>
+                <td class="text-end">
+                    <a asp-action="Edit" asp-route-id="@income.Id" class="btn btn-sm btn-outline-secondary">@Localizer["Common_Edit"]</a>
+                    <form asp-action="Delete" asp-route-id="@income.Id" method="post" class="d-inline" onsubmit="return confirm('@Localizer["Incomes_ConfirmDelete"]');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Items.Any())
+{
+    <p class="text-muted">@Localizer["Incomes_NoneFound"]</p>
+}

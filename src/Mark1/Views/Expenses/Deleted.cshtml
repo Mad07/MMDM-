@@ -1,0 +1,44 @@
+@model List<Mark1.Models.Expense>
+@{
+    ViewData["Title"] = Localizer["Expenses_DeletedTitle"];
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="page-title">@Localizer["Expenses_DeletedTitle"]</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">@Localizer["Expenses_BackToExpenses"]</a>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Localizer["Common_Date"]</th>
+            <th>@Localizer["Common_Description"]</th>
+            <th>@Localizer["Common_Category"]</th>
+            <th>@Localizer["Common_Account"]</th>
+            <th class="text-end">@Localizer["Common_Amount"]</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var expense in Model)
+        {
+            <tr>
+                <td>@expense.Date.ToString("MMM d, yyyy")</td>
+                <td>@expense.Description</td>
+                <td>@expense.Category?.Name</td>
+                <td>@expense.Account?.Name</td>
+                <td class="text-end">@expense.Amount.ToString("N2") @expense.Currency</td>
+                <td class="text-end">
+                    <form asp-action="Restore" asp-route-id="@expense.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-success">@Localizer["Common_Restore"]</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">@Localizer["Expenses_NoneDeleted"]</p>
+}

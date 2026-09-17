@@ -1,0 +1,96 @@
+@model Mark1.Models.ViewModels.SettingsViewModel
+@{
+    ViewData["Title"] = Localizer["Settings_Title"];
+}
+
+<h1 class="page-title">@Localizer["Settings_Title"]</h1>
+
+@if (TempData["SettingsError"] != null)
+{
+    <div class="alert alert-warning">@TempData["SettingsError"]</div>
+}
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab == "categories" ? "active" : "")" asp-action="Index" asp-route-tab="categories">@Localizer["Settings_ManageCategories"]</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab == "accounts" ? "active" : "")" asp-action="Index" asp-route-tab="accounts">@Localizer["Settings_ManageAccounts"]</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab == "currency" ? "active" : "")" asp-action="Index" asp-route-tab="currency">@Localizer["Settings_CurrencyRate"]</a>
+    </li>
+</ul>
+
+@if (Model.ActiveTab == "categories")
+{
+    <div class="settings-panel">
+        <form asp-action="AddCategory" method="post" class="d-flex gap-2 mb-3">
+            <input type="text" name="name" class="form-control" placeholder="@Localizer["Settings_NewCategoryPlaceholder"]" required />
+            <button type="submit" class="btn btn-primary">@Localizer["Common_Add"]</button>
+        </form>
+        <ul class="list-group">
+            @foreach (var category in Model.Categories)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @category.Name
+                    <form asp-action="DeleteCategory" method="post" onsubmit="return confirm('@Localizer["Settings_ConfirmDeleteCategory"]');">
+                        <input type="hidden" name="id" value="@category.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
+}
+else if (Model.ActiveTab == "accounts")
+{
+    <div class="settings-panel">
+        <form asp-action="AddAccount" method="post" class="d-flex gap-2 mb-3">
+            <input type="text" name="name" class="form-control" placeholder="@Localizer["Settings_NewAccountPlaceholder"]" required />
+            <button type="submit" class="btn btn-primary">@Localizer["Common_Add"]</button>
+        </form>
+        <ul class="list-group">
+            @foreach (var account in Model.Accounts)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @account.Name
+                    <form asp-action="DeleteAccount" method="post" onsubmit="return confirm('@Localizer["Settings_ConfirmDeleteAccount"]');">
+                        <input type="hidden" name="id" value="@account.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="settings-panel">
+        <form asp-action="UpdateCurrency" method="post" class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">@Localizer["Settings_FixedRateLabel"]</label>
+                <input type="number" step="0.01" name="fixedExchangeRate" class="form-control" value="@Model.CurrencySettings.FixedExchangeRate" required />
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="useLiveRate" value="true" class="form-check-input" id="useLiveRate" checked="@Model.CurrencySettings.UseLiveRate" />
+                <label class="form-check-label" for="useLiveRate">@Localizer["Settings_UseLiveRate"]</label>
+            </div>
+            @if (Model.CurrencySettings.UseLiveRate)
+            {
+                <p class="text-muted">
+                    @Localizer["Settings_LiveRateNow"]
+                    @if (Model.LiveRatePreview.HasValue && Model.LiveRatePreview != Model.CurrencySettings.FixedExchangeRate)
+                    {
+                        <strong>@Model.LiveRatePreview.Value.ToString("N2")</strong>
+                    }
+                    else
+                    {
+                        <span>@Localizer["Settings_LiveRateUnavailable"]</span>
+                    }
+                </p>
+            }
+            <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>
+        </form>
+    </div>
+}

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Nav_Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Nav_Expenses" xml:space="preserve"><value>Expenses</value></data>
+  <data name="Nav_Incomes" xml:space="preserve"><value>Incomes</value></data>
+  <data name="Nav_AccountOverview" xml:space="preserve"><value>Account Overview</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Nav_Logout" xml:space="preserve"><value>Logout</value></data>
+
+  <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Common_Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Common_Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Common_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Common_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Common_Amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="Common_Currency" xml:space="preserve"><value>Currency</value></data>
+  <data name="Common_Category" xml:space="preserve"><value>Category</value></data>
+  <data name="Common_Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Common_AllCategories" xml:space="preserve"><value>All categories</value></data>
+  <data name="Common_AllAccounts" xml:space="preserve"><value>All accounts</value></data>
+  <data name="Common_AllCurrencies" xml:space="preserve"><value>All currencies</value></data>
+  <data name="Common_RepeatsMonthly" xml:space="preserve"><value>Repeats monthly</value></data>
+  <data name="Common_AllTime" xml:space="preserve"><value>All Time</value></data>
+  <data name="Common_All" xml:space="preserve"><value>All</value></data>
+  <data name="Common_SelectCategory" xml:space="preserve"><value>-- Select category --</value></data>
+  <data name="Common_SelectAccount" xml:space="preserve"><value>-- Select account --</value></data>
+
+  <data name="Home_Title" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Home_SpendingThisMonth" xml:space="preserve"><value>Spending this month</value></data>
+  <data name="Home_IncomeThisMonth" xml:space="preserve"><value>Income this month</value></data>
+  <data name="Home_ExpensesLogged" xml:space="preserve"><value>Expenses logged</value></data>
+  <data name="Home_IncomesLogged" xml:space="preserve"><value>Incomes logged</value></data>
+  <data name="Home_RecentExpenses" xml:space="preserve"><value>Recent Expenses</value></data>
+  <data name="Home_RecentIncomes" xml:space="preserve"><value>Recent Incomes</value></data>
+  <data name="Home_ViewAllExpenses" xml:space="preserve"><value>View all expenses</value></data>
+  <data name="Home_ViewAllIncomes" xml:space="preserve"><value>View all incomes</value></data>
+  <data name="Home_CategoryUsd" xml:space="preserve"><value>Spending by Category (USD)</value></data>
+  <data name="Home_CategoryCrc" xml:space="preserve"><value>Spending by Category (CRC)</value></data>
+  <data name="Home_TrendUsd" xml:space="preserve"><value>6-Month Trend (USD)</value></data>
+  <data name="Home_TrendCrc" xml:space="preserve"><value>6-Month Trend (CRC)</value></data>
+
+  <data name="Expenses_Title" xml:space="preserve"><value>Expenses</value></data>
+  <data name="Expenses_Add" xml:space="preserve"><value>Add Expense</value></data>
+  <data name="Expenses_AddTitle" xml:space="preserve"><value>Add Expense</value></data>
+  <data name="Expenses_EditTitle" xml:space="preserve"><value>Edit Expense</value></data>
+  <data name="Expenses_Deleted" xml:space="preserve"><value>Deleted</value></data>
+  <data name="Expenses_DeletedTitle" xml:space="preserve"><value>Deleted Expenses</value></data>
+  <data name="Expenses_BackToExpenses" xml:space="preserve"><value>Back to Expenses</value></data>
+  <data name="Expenses_NoneFound" xml:space="preserve"><value>No expenses found for this filter.</value></data>
+  <data name="Expenses_NoneDeleted" xml:space="preserve"><value>No deleted expenses.</value></data>
+  <data name="Expenses_ConfirmDelete" xml:space="preserve"><value>Delete this expense?</value></data>
+
+  <data name="Incomes_Title" xml:space="preserve"><value>Incomes</value></data>
+  <data name="Incomes_Add" xml:space="preserve"><value>Add Income</value></data>
+  <data name="Incomes_AddTitle" xml:space="preserve"><value>Add Income</value></data>
+  <data name="Incomes_EditTitle" xml:space="preserve"><value>Edit Income</value></data>
+  <data name="Incomes_NoneFound" xml:space="preserve"><value>No incomes found for this filter.</value></data>
+  <data name="Incomes_ConfirmDelete" xml:space="preserve"><value>Delete this income?</value></data>
+
+  <data name="Settings_Title" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_ManageCategories" xml:space="preserve"><value>Manage Categories</value></data>
+  <data name="Settings_ManageAccounts" xml:space="preserve"><value>Manage Accounts</value></data>
+  <data name="Settings_CurrencyRate" xml:space="preserve"><value>Currency Rate</value></data>
+  <data name="Settings_NewCategoryPlaceholder" xml:space="preserve"><value>New category name</value></data>
+  <data name="Settings_NewAccountPlaceholder" xml:space="preserve"><value>New account name</value></data>
+  <data name="Settings_FixedRateLabel" xml:space="preserve"><value>Fixed CRC per USD rate</value></data>
+  <data name="Settings_UseLiveRate" xml:space="preserve"><value>Try live rate lookup first (falls back to fixed rate if unavailable)</value></data>
+  <data name="Settings_LiveRateNow" xml:space="preserve"><value>Live rate right now:</value></data>
+  <data name="Settings_LiveRateUnavailable" xml:space="preserve"><value>unavailable - using fixed rate</value></data>
+  <data name="Settings_ConfirmDeleteCategory" xml:space="preserve"><value>Delete this category?</value></data>
+  <data name="Settings_ConfirmDeleteAccount" xml:space="preserve"><value>Delete this account?</value></data>
+
+  <data name="AccountOverview_Title" xml:space="preserve"><value>Account Overview</value></data>
+  <data name="AccountOverview_UsdOnly" xml:space="preserve"><value>USD only</value></data>
+  <data name="AccountOverview_CrcOnly" xml:space="preserve"><value>CRC only</value></data>
+  <data name="AccountOverview_AllUsd" xml:space="preserve"><value>All in USD</value></data>
+  <data name="AccountOverview_AllCrc" xml:space="preserve"><value>All in CRC</value></data>
+  <data name="AccountOverview_UsdNet" xml:space="preserve"><value>USD net</value></data>
+  <data name="AccountOverview_CrcNet" xml:space="preserve"><value>CRC net</value></data>
+  <data name="AccountOverview_CombinedUsd" xml:space="preserve"><value>Combined (USD)</value></data>
+  <data name="AccountOverview_NoAccounts" xml:space="preserve"><value>No accounts yet - add one in Settings.</value></data>
+
+  <data name="Login_Title" xml:space="preserve"><value>MMDM Expense Tracker</value></data>
+  <data name="Login_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Login_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Login_RememberMe" xml:space="preserve"><value>Remember me</value></data>
+  <data name="Login_Submit" xml:space="preserve"><value>Log in</value></data>
+  <data name="Login_InvalidAttempt" xml:space="preserve"><value>Invalid login attempt.</value></data>
+</root>

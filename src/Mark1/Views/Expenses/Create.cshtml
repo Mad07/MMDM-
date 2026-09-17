@@ -1,0 +1,11 @@
+@model Mark1.Models.ViewModels.ExpenseFormViewModel
+@{
+    ViewData["Title"] = Localizer["Expenses_AddTitle"];
+}
+
+<h1 class="page-title">@Localizer["Expenses_AddTitle"]</h1>
+<partial name="_Form" />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

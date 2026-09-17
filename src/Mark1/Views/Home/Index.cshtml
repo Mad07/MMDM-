@@ -1,0 +1,127 @@
+@model Mark1.Models.ViewModels.HomeDashboardViewModel
+@{
+    ViewData["Title"] = Localizer["Home_Title"];
+}
+
+<h1 class="page-title">@Localizer["Home_Title"]</h1>
+
+<div class="stat-tiles">
+    <div class="stat-tile stat-expense">
+        <div class="stat-label">@Localizer["Home_SpendingThisMonth"]</div>
+        <div class="stat-value">$@Model.SpendingThisMonthUsd.ToString("N2")</div>
+        <div class="stat-sub">&#8353;@Model.SpendingThisMonthCrc.ToString("N2")</div>
+    </div>
+    <div class="stat-tile stat-income">
+        <div class="stat-label">@Localizer["Home_IncomeThisMonth"]</div>
+        <div class="stat-value">$@Model.IncomeThisMonthUsd.ToString("N2")</div>
+        <div class="stat-sub">&#8353;@Model.IncomeThisMonthCrc.ToString("N2")</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-label">@Localizer["Home_ExpensesLogged"]</div>
+        <div class="stat-value">@Model.ExpenseCount</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-label">@Localizer["Home_IncomesLogged"]</div>
+        <div class="stat-value">@Model.IncomeCount</div>
+    </div>
+</div>
+
+<div class="chart-grid">
+    <div class="chart-card">
+        <h2>@Localizer["Home_CategoryUsd"]</h2>
+        <canvas id="chartCategoryUsd"></canvas>
+    </div>
+    <div class="chart-card">
+        <h2>@Localizer["Home_CategoryCrc"]</h2>
+        <canvas id="chartCategoryCrc"></canvas>
+    </div>
+    <div class="chart-card">
+        <h2>@Localizer["Home_TrendUsd"]</h2>
+        <canvas id="chartTrendUsd"></canvas>
+    </div>
+    <div class="chart-card">
+        <h2>@Localizer["Home_TrendCrc"]</h2>
+        <canvas id="chartTrendCrc"></canvas>
+    </div>
+</div>
+
+<div class="recent-grid">
+    <div>
+        <h2>@Localizer["Home_RecentExpenses"]</h2>
+        <table class="table table-sm">
+            <tbody>
+                @foreach (var expense in Model.RecentExpenses)
+                {
+                    <tr>
+                        <td>@expense.Date.ToString("MMM d")</td>
+                        <td>@expense.Description</td>
+                        <td class="text-end amount-expense">@expense.Amount.ToString("N2") @expense.Currency</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-controller="Expenses" asp-action="Index">@Localizer["Home_ViewAllExpenses"] &rarr;</a>
+    </div>
+    <div>
+        <h2>@Localizer["Home_RecentIncomes"]</h2>
+        <table class="table table-sm">
+            <tbody>
+                @foreach (var income in Model.RecentIncomes)
+                {
+                    <tr>
+                        <td>@income.Date.ToString("MMM d")</td>
+                        <td>@income.Description</td>
+                        <td class="text-end amount-income">@income.Amount.ToString("N2") @income.Currency</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-controller="Incomes" asp-action="Index">@Localizer["Home_ViewAllIncomes"] &rarr;</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script>
+        const categoryUsdLabels = @Html.Raw(Json.Serialize(Model.CategoryLabelsUsd));
+        const categoryUsdValues = @Html.Raw(Json.Serialize(Model.CategoryValuesUsd));
+        const categoryCrcLabels = @Html.Raw(Json.Serialize(Model.CategoryLabelsCrc));
+        const categoryCrcValues = @Html.Raw(Json.Serialize(Model.CategoryValuesCrc));
+        const trendLabels = @Html.Raw(Json.Serialize(Model.TrendLabels));
+        const trendExpensesUsd = @Html.Raw(Json.Serialize(Model.TrendExpensesUsd));
+        const trendIncomeUsd = @Html.Raw(Json.Serialize(Model.TrendIncomeUsd));
+        const trendExpensesCrc = @Html.Raw(Json.Serialize(Model.TrendExpensesCrc));
+        const trendIncomeCrc = @Html.Raw(Json.Serialize(Model.TrendIncomeCrc));
+
+        const palette = ['#e5533c', '#2f7a4f', '#e0a63c', '#3c6fe0', '#8e5ae2', '#4bb3a8', '#c94f8f'];
+
+        new Chart(document.getElementById('chartCategoryUsd'), {
+            type: 'doughnut',
+            data: { labels: categoryUsdLabels, datasets: [{ data: categoryUsdValues, backgroundColor: palette }] }
+        });
+        new Chart(document.getElementById('chartCategoryCrc'), {
+            type: 'doughnut',
+            data: { labels: categoryCrcLabels, datasets: [{ data: categoryCrcValues, backgroundColor: palette }] }
+        });
+        new Chart(document.getElementById('chartTrendUsd'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [
+                    { label: 'Expenses', data: trendExpensesUsd, borderColor: '#e5533c', tension: 0.3 },
+                    { label: 'Income', data: trendIncomeUsd, borderColor: '#2f7a4f', tension: 0.3 }
+                ]
+            }
+        });
+        new Chart(document.getElementById('chartTrendCrc'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [
+                    { label: 'Expenses', data: trendExpensesCrc, borderColor: '#e5533c', tension: 0.3 },
+                    { label: 'Income', data: trendIncomeCrc, borderColor: '#2f7a4f', tension: 0.3 }
+                ]
+            }
+        });
+    </script>
+}

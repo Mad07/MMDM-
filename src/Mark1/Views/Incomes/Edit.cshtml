@@ -1,0 +1,11 @@
+@model Mark1.Models.ViewModels.IncomeFormViewModel
+@{
+    ViewData["Title"] = Localizer["Incomes_EditTitle"];
+}
+
+<h1 class="page-title">@Localizer["Incomes_EditTitle"]</h1>
+<partial name="_Form" />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

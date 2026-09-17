@@ -1,0 +1,36 @@
+@model Mark1.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_LoginLayout";
+}
+
+<div class="auth-card">
+    <h1 class="auth-title">@Localizer["Login_Title"]</h1>
+    <form asp-controller="Account" asp-action="Login" method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">@Localizer["Login_Email"]</label>
+            <input asp-for="Email" class="form-control" autofocus />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label">@Localizer["Login_Password"]</label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input asp-for="RememberMe" class="form-check-input" />
+            <label asp-for="RememberMe" class="form-check-label">@Localizer["Login_RememberMe"]</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">@Localizer["Login_Submit"]</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

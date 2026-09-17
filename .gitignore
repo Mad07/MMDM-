@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+*.user
+
+## SQLite runtime database (never committed - seeded fresh on first run)
+*.db
+*.db-shm
+*.db-wal
+
+## IDE
+.vs/
+.vscode/
+*.suo
+
+## OS
+.DS_Store
