@@ -50,6 +50,11 @@
         <label asp-for="RepeatsMonthly" class="form-check-label">@Localizer["Common_RepeatsMonthly"]</label>
     </div>
 
+    <div class="mb-3 form-check">
+        <input asp-for="IsPaid" class="form-check-input" />
+        <label asp-for="IsPaid" class="form-check-label">@Localizer["Expenses_Paid"]</label>
+    </div>
+
     <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>
     <a asp-action="Index" class="btn btn-outline-secondary">@Localizer["Common_Cancel"]</a>
 </form>

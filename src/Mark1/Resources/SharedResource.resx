@@ -78,6 +78,8 @@
   <data name="Expenses_ConfirmDelete" xml:space="preserve"><value>Delete this expense?</value></data>
   <data name="Expenses_TotalUsd" xml:space="preserve"><value>Total Spending USD</value></data>
   <data name="Expenses_TotalCrc" xml:space="preserve"><value>Total Spending CRC</value></data>
+  <data name="Expenses_Paid" xml:space="preserve"><value>Paid</value></data>
+  <data name="Expenses_Pending" xml:space="preserve"><value>Pending</value></data>
 
   <data name="Incomes_Title" xml:space="preserve"><value>Incomes</value></data>
   <data name="Incomes_Add" xml:space="preserve"><value>Add Income</value></data>

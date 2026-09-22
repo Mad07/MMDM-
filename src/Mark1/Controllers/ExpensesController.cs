@@ -118,6 +118,7 @@ namespace Mark1.Controllers
                 AccountId = model.AccountId,
                 RepeatsMonthly = model.RepeatsMonthly,
                 NextOccurrenceDate = model.RepeatsMonthly ? model.Date.AddMonths(1) : null,
+                IsPaid = model.IsPaid,
                 UserId = CurrentUserId
             };
             _db.Expenses.Add(expense);
@@ -140,6 +141,7 @@ namespace Mark1.Controllers
                 CategoryId = expense.CategoryId,
                 AccountId = expense.AccountId,
                 RepeatsMonthly = expense.RepeatsMonthly,
+                IsPaid = expense.IsPaid,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -166,6 +168,7 @@ namespace Mark1.Controllers
             expense.Date = model.Date;
             expense.CategoryId = model.CategoryId;
             expense.AccountId = model.AccountId;
+            expense.IsPaid = model.IsPaid;
 
             if (model.RepeatsMonthly && !expense.RepeatsMonthly)
             {

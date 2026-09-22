@@ -6,6 +6,8 @@ namespace Mark1.Models.ViewModels
         public decimal NetUsd { get; set; }
         public decimal NetCrc { get; set; }
         public decimal NetMixedUsd { get; set; }
+        public bool HasUsdActivity { get; set; }
+        public bool HasCrcActivity { get; set; }
     }
 
     public class AccountOverviewViewModel

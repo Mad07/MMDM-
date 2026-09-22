@@ -54,26 +54,33 @@ namespace Mark1.Controllers
             {
                 var accountIncomeUsd = incomes.Where(i => i.AccountId == account.Id && i.Currency == Currency.USD).Sum(i => i.Amount);
                 var accountIncomeCrc = incomes.Where(i => i.AccountId == account.Id && i.Currency == Currency.CRC).Sum(i => i.Amount);
-                var accountExpenseUsd = expenses.Where(e => e.AccountId == account.Id && e.Currency == Currency.USD).Sum(e => e.Amount);
-                var accountExpenseCrc = expenses.Where(e => e.AccountId == account.Id && e.Currency == Currency.CRC).Sum(e => e.Amount);
+                var accountExpenseUsd = expenses.Where(e => e.AccountId == account.Id && e.Currency == Currency.USD && e.IsPaid).Sum(e => e.Amount);
+                var accountExpenseCrc = expenses.Where(e => e.AccountId == account.Id && e.Currency == Currency.CRC && e.IsPaid).Sum(e => e.Amount);
 
                 var netUsd = accountIncomeUsd - accountExpenseUsd;
                 var netCrc = accountIncomeCrc - accountExpenseCrc;
                 var netMixedUsd = netUsd + (rate > 0 ? netCrc / rate : 0);
+
+                var hasUsdActivity = incomes.Any(i => i.AccountId == account.Id && i.Currency == Currency.USD)
+                    || expenses.Any(e => e.AccountId == account.Id && e.Currency == Currency.USD);
+                var hasCrcActivity = incomes.Any(i => i.AccountId == account.Id && i.Currency == Currency.CRC)
+                    || expenses.Any(e => e.AccountId == account.Id && e.Currency == Currency.CRC);
 
                 vm.AccountCards.Add(new AccountCardViewModel
                 {
                     AccountName = AccountDisplay.Localize(account.Name, _localizer),
                     NetUsd = netUsd,
                     NetCrc = netCrc,
-                    NetMixedUsd = netMixedUsd
+                    NetMixedUsd = netMixedUsd,
+                    HasUsdActivity = hasUsdActivity,
+                    HasCrcActivity = hasCrcActivity
                 });
             }
 
             vm.GrandTotalUsdOnly = incomes.Where(i => i.Currency == Currency.USD).Sum(i => i.Amount)
-                - expenses.Where(e => e.Currency == Currency.USD).Sum(e => e.Amount);
+                - expenses.Where(e => e.Currency == Currency.USD && e.IsPaid).Sum(e => e.Amount);
             vm.GrandTotalCrcOnly = incomes.Where(i => i.Currency == Currency.CRC).Sum(i => i.Amount)
-                - expenses.Where(e => e.Currency == Currency.CRC).Sum(e => e.Amount);
+                - expenses.Where(e => e.Currency == Currency.CRC && e.IsPaid).Sum(e => e.Amount);
             vm.GrandTotalUsdMixed = vm.GrandTotalUsdOnly + (rate > 0 ? vm.GrandTotalCrcOnly / rate : 0);
             vm.GrandTotalCrcMixed = vm.GrandTotalCrcOnly + (vm.GrandTotalUsdOnly * rate);
 

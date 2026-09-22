@@ -27,6 +27,10 @@ namespace Mark1.Models
 
         public bool IsDeleted { get; set; }
 
+        /// <summary>Whether this expense has actually been paid out. Unpaid expenses are excluded
+        /// from the Account Overview balances until checked off.</summary>
+        public bool IsPaid { get; set; }
+
         public bool RepeatsMonthly { get; set; }
 
         /// <summary>Set only on the template row when RepeatsMonthly is true; drives when the next occurrence gets generated.</summary>

@@ -70,6 +70,10 @@
                     {
                         <span class="badge bg-secondary">@Localizer["Common_RepeatsMonthly"]</span>
                     }
+                    @if (!expense.IsPaid)
+                    {
+                        <span class="badge bg-warning text-dark">@Localizer["Expenses_Pending"]</span>
+                    }
                 </td>
                 <td>@CategoryDisplay.Localize(expense.Category?.Name, Localizer)</td>
                 <td>@AccountDisplay.Localize(expense.Account?.Name, Localizer)</td>

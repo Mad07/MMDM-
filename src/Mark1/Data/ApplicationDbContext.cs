@@ -44,6 +44,10 @@ namespace Mark1.Data
             builder.Entity<Expense>().Property(e => e.Date).HasColumnType("date");
             builder.Entity<Expense>().Property(e => e.NextOccurrenceDate).HasColumnType("date");
 
+            // Existing rows predate the Paid flag and already happened, so they backfill as paid;
+            // ExpenseFormViewModel defaults new Create-form expenses to unpaid instead.
+            builder.Entity<Expense>().Property(e => e.IsPaid).HasDefaultValue(true);
+
             builder.Entity<Income>()
                 .HasOne(i => i.User)
                 .WithMany(u => u.Incomes)

@@ -39,29 +39,50 @@
     {
         var card = Model.AccountCards[i];
         var collapseId = $"account-{i}";
+        var isUsdOnly = card.HasUsdActivity && !card.HasCrcActivity;
+        var isCrcOnly = card.HasCrcActivity && !card.HasUsdActivity;
+        var headerValue = isUsdOnly ? card.NetUsd : isCrcOnly ? card.NetCrc : card.NetMixedUsd;
+        var headerSymbol = isCrcOnly ? "&#8353;" : "$";
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button @(i > 0 ? "collapsed" : "")" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId">
                     @card.AccountName
-                    <span class="ms-auto account-net @(card.NetMixedUsd < 0 ? "amount-expense" : "amount-income")">
-                        $@card.NetMixedUsd.ToString("N2")
+                    <span class="ms-auto account-net @(headerValue < 0 ? "amount-expense" : "amount-income")">
+                        @Html.Raw(headerSymbol)@headerValue.ToString("N2")
                     </span>
                 </button>
             </h2>
             <div id="@collapseId" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#accountAccordion">
                 <div class="accordion-body row">
-                    <div class="col-4">
-                        <div class="text-muted">@Localizer["AccountOverview_UsdNet"]</div>
-                        <div>$@card.NetUsd.ToString("N2")</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="text-muted">@Localizer["AccountOverview_CrcNet"]</div>
-                        <div>&#8353;@card.NetCrc.ToString("N2")</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="text-muted">@Localizer["AccountOverview_CombinedUsd"]</div>
-                        <div>$@card.NetMixedUsd.ToString("N2")</div>
-                    </div>
+                    @if (isUsdOnly)
+                    {
+                        <div class="col-12">
+                            <div class="text-muted">@Localizer["AccountOverview_UsdNet"]</div>
+                            <div>$@card.NetUsd.ToString("N2")</div>
+                        </div>
+                    }
+                    else if (isCrcOnly)
+                    {
+                        <div class="col-12">
+                            <div class="text-muted">@Localizer["AccountOverview_CrcNet"]</div>
+                            <div>&#8353;@card.NetCrc.ToString("N2")</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-4">
+                            <div class="text-muted">@Localizer["AccountOverview_UsdNet"]</div>
+                            <div>$@card.NetUsd.ToString("N2")</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted">@Localizer["AccountOverview_CrcNet"]</div>
+                            <div>&#8353;@card.NetCrc.ToString("N2")</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted">@Localizer["AccountOverview_CombinedUsd"]</div>
+                            <div>$@card.NetMixedUsd.ToString("N2")</div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
