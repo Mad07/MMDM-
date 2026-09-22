@@ -31,6 +31,15 @@ namespace Mark1.Models
         /// from the Account Overview balances until checked off.</summary>
         public bool IsPaid { get; set; }
 
+        /// <summary>When true, this expense's amount is mirrored as an Income on the user's
+        /// Savings account (see TransferIncomeId) - money moving between accounts, not real spending.</summary>
+        public bool IsTransferToSavings { get; set; }
+
+        /// <summary>Id of the auto-generated Income this expense mirrors into Savings, kept in sync
+        /// on edit and removed if IsTransferToSavings is unchecked or the expense is deleted.
+        /// Loosely coupled on purpose - no EF relationship/FK constraint against Income.</summary>
+        public int? TransferIncomeId { get; set; }
+
         public bool RepeatsMonthly { get; set; }
 
         /// <summary>Set only on the template row when RepeatsMonthly is true; drives when the next occurrence gets generated.</summary>

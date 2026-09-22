@@ -28,6 +28,8 @@ namespace Mark1.Models.ViewModels
 
         public bool IsPaid { get; set; }
 
+        public bool IsTransferToSavings { get; set; }
+
         public IEnumerable<SelectListItem> CategoryOptions { get; set; } = Enumerable.Empty<SelectListItem>();
         public IEnumerable<SelectListItem> AccountOptions { get; set; } = Enumerable.Empty<SelectListItem>();
     }

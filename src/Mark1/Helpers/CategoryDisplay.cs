@@ -11,7 +11,7 @@ namespace Mark1.Helpers
     {
         private static readonly HashSet<string> DefaultCategoryNames = new(StringComparer.Ordinal)
         {
-            "Groceries", "Rent", "Utilities", "Transportation", "Entertainment", "Salary", "Other"
+            "Groceries", "Rent", "Utilities", "Transportation", "Entertainment", "Salary", "Other", "Transfer"
         };
 
         public static string Localize(string? name, IStringLocalizer localizer)

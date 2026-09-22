@@ -119,10 +119,15 @@ namespace Mark1.Controllers
                 RepeatsMonthly = model.RepeatsMonthly,
                 NextOccurrenceDate = model.RepeatsMonthly ? model.Date.AddMonths(1) : null,
                 IsPaid = model.IsPaid,
+                IsTransferToSavings = model.IsTransferToSavings,
                 UserId = CurrentUserId
             };
             _db.Expenses.Add(expense);
             await _db.SaveChangesAsync();
+
+            await SyncTransferIncomeAsync(expense, model.IsTransferToSavings);
+            await _db.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -142,6 +147,7 @@ namespace Mark1.Controllers
                 AccountId = expense.AccountId,
                 RepeatsMonthly = expense.RepeatsMonthly,
                 IsPaid = expense.IsPaid,
+                IsTransferToSavings = expense.IsTransferToSavings,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -179,7 +185,9 @@ namespace Mark1.Controllers
                 expense.NextOccurrenceDate = null;
             }
             expense.RepeatsMonthly = model.RepeatsMonthly;
+            expense.IsTransferToSavings = model.IsTransferToSavings;
 
+            await SyncTransferIncomeAsync(expense, model.IsTransferToSavings);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -205,6 +213,10 @@ namespace Mark1.Controllers
             if (expense != null)
             {
                 expense.IsDeleted = true;
+                // The linked transfer income is removed rather than kept dangling - if the expense
+                // is later restored, the transfer link is gone and the checkbox reverts to unchecked.
+                await SyncTransferIncomeAsync(expense, wantTransfer: false);
+                expense.IsTransferToSavings = false;
                 await _db.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
@@ -220,6 +232,70 @@ namespace Mark1.Controllers
                 return Redirect(refererUri.PathAndQuery);
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>Keeps an expense's mirrored Savings-account Income in sync: creates one if
+        /// wantTransfer is newly true, updates it in place if the expense's amount/date/etc.
+        /// changed, or removes it if wantTransfer is false. No-ops if the user has no account
+        /// literally named "Savings" (renamed/deleted) - silently leaves the expense as a plain
+        /// expense in that case rather than failing the save.</summary>
+        private async Task SyncTransferIncomeAsync(Expense expense, bool wantTransfer)
+        {
+            if (!wantTransfer)
+            {
+                if (expense.TransferIncomeId.HasValue)
+                {
+                    var existing = await _db.Incomes.FirstOrDefaultAsync(i => i.Id == expense.TransferIncomeId.Value && i.UserId == CurrentUserId);
+                    if (existing != null) _db.Incomes.Remove(existing);
+                    expense.TransferIncomeId = null;
+                }
+                return;
+            }
+
+            var savingsAccount = await GetSavingsAccountAsync();
+            if (savingsAccount == null)
+            {
+                TempData["ExpenseTransferWarning"] = _localizer["Expenses_TransferNoSavingsAccount"].Value;
+                expense.TransferIncomeId = null;
+                return;
+            }
+
+            var transferCategory = await GetOrCreateTransferCategoryAsync();
+
+            var income = expense.TransferIncomeId.HasValue
+                ? await _db.Incomes.FirstOrDefaultAsync(i => i.Id == expense.TransferIncomeId.Value && i.UserId == CurrentUserId)
+                : null;
+
+            if (income == null)
+            {
+                income = new Income { UserId = CurrentUserId };
+                _db.Incomes.Add(income);
+            }
+
+            income.Description = _localizer["Expenses_TransferIncomeDescription", expense.Description];
+            income.Amount = expense.Amount;
+            income.Currency = expense.Currency;
+            income.Date = expense.Date;
+            income.CategoryId = transferCategory.Id;
+            income.AccountId = savingsAccount.Id;
+
+            await _db.SaveChangesAsync();
+            expense.TransferIncomeId = income.Id;
+        }
+
+        private async Task<Account?> GetSavingsAccountAsync() =>
+            await _db.Accounts.FirstOrDefaultAsync(a => a.UserId == CurrentUserId && a.Name == "Savings");
+
+        private async Task<Category> GetOrCreateTransferCategoryAsync()
+        {
+            var category = await _db.Categories.FirstOrDefaultAsync(c => c.UserId == CurrentUserId && c.Name == "Transfer");
+            if (category == null)
+            {
+                category = new Category { Name = "Transfer", UserId = CurrentUserId };
+                _db.Categories.Add(category);
+                await _db.SaveChangesAsync();
+            }
+            return category;
         }
 
         private async Task<IEnumerable<SelectListItem>> GetCategoryOptionsAsync() =>

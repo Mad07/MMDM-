@@ -1,5 +1,10 @@
 @model Mark1.Models.ViewModels.ExpenseFormViewModel
 
+@if (TempData["ExpenseTransferWarning"] != null)
+{
+    <div class="alert alert-warning col-md-6">@TempData["ExpenseTransferWarning"]</div>
+}
+
 <form method="post" class="col-md-6">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
@@ -53,6 +58,11 @@
     <div class="mb-3 form-check">
         <input asp-for="IsPaid" class="form-check-input" />
         <label asp-for="IsPaid" class="form-check-label">@Localizer["Expenses_Paid"]</label>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="IsTransferToSavings" class="form-check-input" />
+        <label asp-for="IsTransferToSavings" class="form-check-label">@Localizer["Expenses_TransferToSavings"]</label>
     </div>
 
     <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>
