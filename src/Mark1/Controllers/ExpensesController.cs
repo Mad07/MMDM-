@@ -120,12 +120,13 @@ namespace Mark1.Controllers
                 NextOccurrenceDate = model.RepeatsMonthly ? model.Date.AddMonths(1) : null,
                 IsPaid = model.IsPaid,
                 IsTransferToSavings = model.IsTransferToSavings,
+                IsTransferToRetained = model.IsTransferToRetained,
                 UserId = CurrentUserId
             };
             _db.Expenses.Add(expense);
             await _db.SaveChangesAsync();
 
-            await SyncTransferIncomeAsync(expense, model.IsTransferToSavings);
+            await SyncTransferIncomeAsync(expense, GetTransferTargetAccountName(model.IsTransferToSavings, model.IsTransferToRetained));
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -148,6 +149,7 @@ namespace Mark1.Controllers
                 RepeatsMonthly = expense.RepeatsMonthly,
                 IsPaid = expense.IsPaid,
                 IsTransferToSavings = expense.IsTransferToSavings,
+                IsTransferToRetained = expense.IsTransferToRetained,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -186,8 +188,9 @@ namespace Mark1.Controllers
             }
             expense.RepeatsMonthly = model.RepeatsMonthly;
             expense.IsTransferToSavings = model.IsTransferToSavings;
+            expense.IsTransferToRetained = model.IsTransferToRetained;
 
-            await SyncTransferIncomeAsync(expense, model.IsTransferToSavings);
+            await SyncTransferIncomeAsync(expense, GetTransferTargetAccountName(model.IsTransferToSavings, model.IsTransferToRetained));
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -197,12 +200,11 @@ namespace Mark1.Controllers
         public async Task<IActionResult> TogglePaid(int id)
         {
             var expense = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
-            if (expense != null)
-            {
-                expense.IsPaid = !expense.IsPaid;
-                await _db.SaveChangesAsync();
-            }
-            return RedirectToReferrer();
+            if (expense == null) return NotFound();
+
+            expense.IsPaid = !expense.IsPaid;
+            await _db.SaveChangesAsync();
+            return NoContent();
         }
 
         [HttpPost]
@@ -214,34 +216,32 @@ namespace Mark1.Controllers
             {
                 expense.IsDeleted = true;
                 // The linked transfer income is removed rather than kept dangling - if the expense
-                // is later restored, the transfer link is gone and the checkbox reverts to unchecked.
-                await SyncTransferIncomeAsync(expense, wantTransfer: false);
+                // is later restored, the transfer link is gone and both checkboxes revert to unchecked.
+                await SyncTransferIncomeAsync(expense, targetAccountName: null);
                 expense.IsTransferToSavings = false;
+                expense.IsTransferToRetained = false;
                 await _db.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
         }
 
-        /// <summary>Sends the user back to whichever filtered/paged Expenses view they toggled
-        /// Paid from, instead of always resetting to the unfiltered list.</summary>
-        private IActionResult RedirectToReferrer()
+        /// <summary>Savings takes priority if both checkboxes somehow arrive true (client-side JS
+        /// keeps them mutually exclusive, but this is the server-side fallback).</summary>
+        private static string? GetTransferTargetAccountName(bool toSavings, bool toRetained)
         {
-            var referer = Request.Headers.Referer.ToString();
-            if (Uri.TryCreate(referer, UriKind.Absolute, out var refererUri) && refererUri.Host == Request.Host.Host)
-            {
-                return Redirect(refererUri.PathAndQuery);
-            }
-            return RedirectToAction(nameof(Index));
+            if (toSavings) return "Savings";
+            if (toRetained) return "Retained";
+            return null;
         }
 
-        /// <summary>Keeps an expense's mirrored Savings-account Income in sync: creates one if
-        /// wantTransfer is newly true, updates it in place if the expense's amount/date/etc.
-        /// changed, or removes it if wantTransfer is false. No-ops if the user has no account
-        /// literally named "Savings" (renamed/deleted) - silently leaves the expense as a plain
-        /// expense in that case rather than failing the save.</summary>
-        private async Task SyncTransferIncomeAsync(Expense expense, bool wantTransfer)
+        /// <summary>Keeps an expense's mirrored destination-account Income in sync: creates one if
+        /// targetAccountName is set, updates it in place if the expense's amount/date/target/etc.
+        /// changed, or removes it if targetAccountName is null. No-ops (with a warning) if the user
+        /// has no account with that literal name - leaves the expense as a plain expense rather
+        /// than failing the save.</summary>
+        private async Task SyncTransferIncomeAsync(Expense expense, string? targetAccountName)
         {
-            if (!wantTransfer)
+            if (targetAccountName == null)
             {
                 if (expense.TransferIncomeId.HasValue)
                 {
@@ -252,10 +252,10 @@ namespace Mark1.Controllers
                 return;
             }
 
-            var savingsAccount = await GetSavingsAccountAsync();
-            if (savingsAccount == null)
+            var targetAccount = await _db.Accounts.FirstOrDefaultAsync(a => a.UserId == CurrentUserId && a.Name == targetAccountName);
+            if (targetAccount == null)
             {
-                TempData["ExpenseTransferWarning"] = _localizer["Expenses_TransferNoSavingsAccount"].Value;
+                TempData["ExpenseTransferWarning"] = _localizer["Expenses_TransferNoAccount", targetAccountName].Value;
                 expense.TransferIncomeId = null;
                 return;
             }
@@ -272,19 +272,16 @@ namespace Mark1.Controllers
                 _db.Incomes.Add(income);
             }
 
-            income.Description = _localizer["Expenses_TransferIncomeDescription", expense.Description];
+            income.Description = _localizer["Expenses_TransferIncomeDescription", AccountDisplay.Localize(targetAccountName, _localizer), expense.Description];
             income.Amount = expense.Amount;
             income.Currency = expense.Currency;
             income.Date = expense.Date;
             income.CategoryId = transferCategory.Id;
-            income.AccountId = savingsAccount.Id;
+            income.AccountId = targetAccount.Id;
 
             await _db.SaveChangesAsync();
             expense.TransferIncomeId = income.Id;
         }
-
-        private async Task<Account?> GetSavingsAccountAsync() =>
-            await _db.Accounts.FirstOrDefaultAsync(a => a.UserId == CurrentUserId && a.Name == "Savings");
 
         private async Task<Category> GetOrCreateTransferCategoryAsync()
         {

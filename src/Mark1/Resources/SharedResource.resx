@@ -81,8 +81,9 @@
   <data name="Expenses_Paid" xml:space="preserve"><value>Paid</value></data>
   <data name="Expenses_Pending" xml:space="preserve"><value>Pending</value></data>
   <data name="Expenses_TransferToSavings" xml:space="preserve"><value>Transfer to Savings</value></data>
-  <data name="Expenses_TransferIncomeDescription" xml:space="preserve"><value>Transfer to Savings: {0}</value></data>
-  <data name="Expenses_TransferNoSavingsAccount" xml:space="preserve"><value>No account named "Savings" was found, so this wasn't transferred - it was saved as a regular expense.</value></data>
+  <data name="Expenses_TransferToRetained" xml:space="preserve"><value>Transfer to Retained</value></data>
+  <data name="Expenses_TransferIncomeDescription" xml:space="preserve"><value>Transfer to {0}: {1}</value></data>
+  <data name="Expenses_TransferNoAccount" xml:space="preserve"><value>No account named "{0}" was found, so this wasn't transferred - it was saved as a regular expense.</value></data>
 
   <data name="Incomes_Title" xml:space="preserve"><value>Incomes</value></data>
   <data name="Incomes_Add" xml:space="preserve"><value>Add Income</value></data>

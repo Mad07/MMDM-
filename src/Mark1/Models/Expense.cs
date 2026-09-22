@@ -32,8 +32,13 @@ namespace Mark1.Models
         public bool IsPaid { get; set; }
 
         /// <summary>When true, this expense's amount is mirrored as an Income on the user's
-        /// Savings account (see TransferIncomeId) - money moving between accounts, not real spending.</summary>
+        /// Savings account (see TransferIncomeId) - money moving between accounts, not real spending.
+        /// Mutually exclusive with IsTransferToRetained (enforced in the form UI and in the
+        /// controller, which prioritizes Savings if both somehow arrive true).</summary>
         public bool IsTransferToSavings { get; set; }
+
+        /// <summary>Same idea as IsTransferToSavings, but mirrors to an account named "Retained".</summary>
+        public bool IsTransferToRetained { get; set; }
 
         /// <summary>Id of the auto-generated Income this expense mirrors into Savings, kept in sync
         /// on edit and removed if IsTransferToSavings is unchecked or the expense is deleted.

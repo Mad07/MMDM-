@@ -61,8 +61,13 @@
     </div>
 
     <div class="mb-3 form-check">
-        <input asp-for="IsTransferToSavings" class="form-check-input" />
+        <input asp-for="IsTransferToSavings" class="form-check-input transfer-target-check" data-other-target="IsTransferToRetained" />
         <label asp-for="IsTransferToSavings" class="form-check-label">@Localizer["Expenses_TransferToSavings"]</label>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="IsTransferToRetained" class="form-check-input transfer-target-check" data-other-target="IsTransferToSavings" />
+        <label asp-for="IsTransferToRetained" class="form-check-label">@Localizer["Expenses_TransferToRetained"]</label>
     </div>
 
     <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>

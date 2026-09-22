@@ -76,8 +76,8 @@
                 <td>@AccountDisplay.Localize(expense.Account?.Name, Localizer)</td>
                 <td class="text-end amount-expense">@expense.Amount.ToString("N2") @expense.Currency</td>
                 <td class="text-center">
-                    <form asp-action="TogglePaid" asp-route-id="@expense.Id" method="post" class="d-inline">
-                        <input type="checkbox" class="form-check-input" checked="@expense.IsPaid" onchange="this.form.submit()" title="@Localizer["Expenses_Paid"]" />
+                    <form asp-action="TogglePaid" asp-route-id="@expense.Id" method="post" class="d-inline ajax-toggle-form">
+                        <input type="checkbox" class="form-check-input" checked="@expense.IsPaid" title="@Localizer["Expenses_Paid"]" />
                     </form>
                 </td>
                 <td class="text-end">

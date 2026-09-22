@@ -81,8 +81,9 @@
   <data name="Expenses_Paid" xml:space="preserve"><value>Pagado</value></data>
   <data name="Expenses_Pending" xml:space="preserve"><value>Pendiente</value></data>
   <data name="Expenses_TransferToSavings" xml:space="preserve"><value>Transferir a Ahorros</value></data>
-  <data name="Expenses_TransferIncomeDescription" xml:space="preserve"><value>Transferencia a Ahorros: {0}</value></data>
-  <data name="Expenses_TransferNoSavingsAccount" xml:space="preserve"><value>No se encontró una cuenta llamada "Savings", así que no se transfirió - se guardó como un gasto normal.</value></data>
+  <data name="Expenses_TransferToRetained" xml:space="preserve"><value>Transferir a Retenido</value></data>
+  <data name="Expenses_TransferIncomeDescription" xml:space="preserve"><value>Transferencia a {0}: {1}</value></data>
+  <data name="Expenses_TransferNoAccount" xml:space="preserve"><value>No se encontró una cuenta llamada "{0}", así que no se transfirió - se guardó como un gasto normal.</value></data>
 
   <data name="Incomes_Title" xml:space="preserve"><value>Ingresos</value></data>
   <data name="Incomes_Add" xml:space="preserve"><value>Agregar Ingreso</value></data>
