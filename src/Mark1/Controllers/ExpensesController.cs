@@ -186,6 +186,19 @@ namespace Mark1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TogglePaid(int id)
+        {
+            var expense = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
+            if (expense != null)
+            {
+                expense.IsPaid = !expense.IsPaid;
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToReferrer();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var expense = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
@@ -193,6 +206,18 @@ namespace Mark1.Controllers
             {
                 expense.IsDeleted = true;
                 await _db.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>Sends the user back to whichever filtered/paged Expenses view they toggled
+        /// Paid from, instead of always resetting to the unfiltered list.</summary>
+        private IActionResult RedirectToReferrer()
+        {
+            var referer = Request.Headers.Referer.ToString();
+            if (Uri.TryCreate(referer, UriKind.Absolute, out var refererUri) && refererUri.Host == Request.Host.Host)
+            {
+                return Redirect(refererUri.PathAndQuery);
             }
             return RedirectToAction(nameof(Index));
         }
