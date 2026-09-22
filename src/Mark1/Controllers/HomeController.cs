@@ -1,20 +1,24 @@
 using System.Diagnostics;
 using Mark1.Data;
+using Mark1.Helpers;
 using Mark1.Models;
 using Mark1.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Mark1.Controllers;
 
 public class HomeController : AuthorizedController
 {
     private readonly ApplicationDbContext _db;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public HomeController(ApplicationDbContext db)
+    public HomeController(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer)
     {
         _db = db;
+        _localizer = localizer;
     }
 
     public async Task<IActionResult> Index()
@@ -61,9 +65,9 @@ public class HomeController : AuthorizedController
 
         var categoryNames = await _db.Categories.Where(c => c.UserId == CurrentUserId).ToDictionaryAsync(c => c.Id, c => c.Name);
 
-        vm.CategoryLabelsUsd = byCategoryUsd.Select(g => categoryNames.GetValueOrDefault(g.Key, "Other")).ToList();
+        vm.CategoryLabelsUsd = byCategoryUsd.Select(g => CategoryDisplay.Localize(categoryNames.GetValueOrDefault(g.Key, "Other"), _localizer)).ToList();
         vm.CategoryValuesUsd = byCategoryUsd.Select(g => g.Total).ToList();
-        vm.CategoryLabelsCrc = byCategoryCrc.Select(g => categoryNames.GetValueOrDefault(g.Key, "Other")).ToList();
+        vm.CategoryLabelsCrc = byCategoryCrc.Select(g => CategoryDisplay.Localize(categoryNames.GetValueOrDefault(g.Key, "Other"), _localizer)).ToList();
         vm.CategoryValuesCrc = byCategoryCrc.Select(g => g.Total).ToList();
 
         var sixMonthsAgo = monthStart.AddMonths(-5);

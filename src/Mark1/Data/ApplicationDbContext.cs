@@ -39,6 +39,11 @@ namespace Mark1.Data
                 .HasForeignKey(e => e.AccountId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Date-only fields, not points in time - "date" avoids Npgsql's UTC-only Kind
+            // requirement for "timestamp with time zone" (the DateTime default mapping).
+            builder.Entity<Expense>().Property(e => e.Date).HasColumnType("date");
+            builder.Entity<Expense>().Property(e => e.NextOccurrenceDate).HasColumnType("date");
+
             builder.Entity<Income>()
                 .HasOne(i => i.User)
                 .WithMany(u => u.Incomes)
@@ -56,6 +61,9 @@ namespace Mark1.Data
                 .WithMany(a => a.Incomes)
                 .HasForeignKey(i => i.AccountId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Income>().Property(i => i.Date).HasColumnType("date");
+            builder.Entity<Income>().Property(i => i.NextOccurrenceDate).HasColumnType("date");
 
             builder.Entity<Category>()
                 .HasOne(c => c.User)

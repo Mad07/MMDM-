@@ -68,7 +68,7 @@
                         <span class="badge bg-secondary">@Localizer["Common_RepeatsMonthly"]</span>
                     }
                 </td>
-                <td>@income.Category?.Name</td>
+                <td>@CategoryDisplay.Localize(income.Category?.Name, Localizer)</td>
                 <td>@income.Account?.Name</td>
                 <td class="text-end amount-income">@income.Amount.ToString("N2") @income.Currency</td>
                 <td class="text-end">

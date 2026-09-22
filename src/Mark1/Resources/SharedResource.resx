@@ -96,6 +96,12 @@
   <data name="Settings_LiveRateUnavailable" xml:space="preserve"><value>unavailable - using fixed rate</value></data>
   <data name="Settings_ConfirmDeleteCategory" xml:space="preserve"><value>Delete this category?</value></data>
   <data name="Settings_ConfirmDeleteAccount" xml:space="preserve"><value>Delete this account?</value></data>
+  <data name="Settings_ManageUsers" xml:space="preserve"><value>Manage Users</value></data>
+  <data name="Settings_NewUserEmailPlaceholder" xml:space="preserve"><value>New user's email</value></data>
+  <data name="Settings_NewUserPasswordPlaceholder" xml:space="preserve"><value>Password</value></data>
+  <data name="Settings_ConfirmPasswordPlaceholder" xml:space="preserve"><value>Confirm password</value></data>
+  <data name="Settings_AddUser" xml:space="preserve"><value>Add User</value></data>
+  <data name="Settings_ConfirmDeleteUser" xml:space="preserve"><value>Delete this user and all their data?</value></data>
 
   <data name="AccountOverview_Title" xml:space="preserve"><value>Account Overview</value></data>
   <data name="AccountOverview_UsdOnly" xml:space="preserve"><value>USD only</value></data>
@@ -106,6 +112,14 @@
   <data name="AccountOverview_CrcNet" xml:space="preserve"><value>CRC net</value></data>
   <data name="AccountOverview_CombinedUsd" xml:space="preserve"><value>Combined (USD)</value></data>
   <data name="AccountOverview_NoAccounts" xml:space="preserve"><value>No accounts yet - add one in Settings.</value></data>
+
+  <data name="Category_Groceries" xml:space="preserve"><value>Groceries</value></data>
+  <data name="Category_Rent" xml:space="preserve"><value>Rent</value></data>
+  <data name="Category_Utilities" xml:space="preserve"><value>Utilities</value></data>
+  <data name="Category_Transportation" xml:space="preserve"><value>Transportation</value></data>
+  <data name="Category_Entertainment" xml:space="preserve"><value>Entertainment</value></data>
+  <data name="Category_Salary" xml:space="preserve"><value>Salary</value></data>
+  <data name="Category_Other" xml:space="preserve"><value>Other</value></data>
 
   <data name="Login_Title" xml:space="preserve"><value>MMDM Expense Tracker</value></data>
   <data name="Login_Email" xml:space="preserve"><value>Email</value></data>

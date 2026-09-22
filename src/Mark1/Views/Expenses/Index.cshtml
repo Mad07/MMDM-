@@ -71,7 +71,7 @@
                         <span class="badge bg-secondary">@Localizer["Common_RepeatsMonthly"]</span>
                     }
                 </td>
-                <td>@expense.Category?.Name</td>
+                <td>@CategoryDisplay.Localize(expense.Category?.Name, Localizer)</td>
                 <td>@expense.Account?.Name</td>
                 <td class="text-end amount-expense">@expense.Amount.ToString("N2") @expense.Currency</td>
                 <td class="text-end">

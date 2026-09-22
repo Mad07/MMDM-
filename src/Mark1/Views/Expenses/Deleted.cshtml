@@ -25,7 +25,7 @@
             <tr>
                 <td>@expense.Date.ToString("MMM d, yyyy")</td>
                 <td>@expense.Description</td>
-                <td>@expense.Category?.Name</td>
+                <td>@CategoryDisplay.Localize(expense.Category?.Name, Localizer)</td>
                 <td>@expense.Account?.Name</td>
                 <td class="text-end">@expense.Amount.ToString("N2") @expense.Currency</td>
                 <td class="text-end">

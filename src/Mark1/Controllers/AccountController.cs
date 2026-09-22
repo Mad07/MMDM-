@@ -118,8 +118,7 @@ namespace Mark1.Controllers
                 return View(model);
             }
 
-            _db.AppSettings.Add(new AppSettings { UserId = user.Id, FixedExchangeRate = 525m, UseLiveRate = true });
-            await _db.SaveChangesAsync();
+            await IdentitySeeder.SeedDefaultDataAsync(_db, user.Id);
 
             await _signInManager.SignInAsync(user, isPersistent: true);
             return RedirectToAction("Index", "Home");

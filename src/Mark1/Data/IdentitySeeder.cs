@@ -10,6 +10,34 @@ namespace Mark1.Data
     /// </summary>
     public static class IdentitySeeder
     {
+        public static readonly string[] DefaultCategoryNames =
+            { "Groceries", "Rent", "Utilities", "Transportation", "Entertainment", "Salary", "Other" };
+
+        public static readonly string[] DefaultAccountNames = { "Cash", "Savings", "Checking" };
+
+        /// <summary>Gives a newly created user the same starter categories/accounts/settings every account gets - used by both the startup seeder and Settings' "add user" form.</summary>
+        public static async Task SeedDefaultDataAsync(ApplicationDbContext db, string userId)
+        {
+            foreach (var name in DefaultCategoryNames)
+            {
+                db.Categories.Add(new Category { Name = name, UserId = userId });
+            }
+
+            foreach (var name in DefaultAccountNames)
+            {
+                db.Accounts.Add(new Account { Name = name, UserId = userId });
+            }
+
+            db.AppSettings.Add(new AppSettings
+            {
+                UserId = userId,
+                FixedExchangeRate = 525m,
+                UseLiveRate = true
+            });
+
+            await db.SaveChangesAsync();
+        }
+
         public static async Task SeedAsync(IServiceProvider services, IConfiguration configuration)
         {
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
@@ -41,26 +69,7 @@ namespace Mark1.Data
                 return;
             }
 
-            var defaultCategories = new[] { "Groceries", "Rent", "Utilities", "Transportation", "Entertainment", "Salary", "Other" };
-            foreach (var name in defaultCategories)
-            {
-                db.Categories.Add(new Category { Name = name, UserId = user.Id });
-            }
-
-            var defaultAccounts = new[] { "Cash", "Savings", "Checking" };
-            foreach (var name in defaultAccounts)
-            {
-                db.Accounts.Add(new Account { Name = name, UserId = user.Id });
-            }
-
-            db.AppSettings.Add(new AppSettings
-            {
-                UserId = user.Id,
-                FixedExchangeRate = 525m,
-                UseLiveRate = true
-            });
-
-            await db.SaveChangesAsync();
+            await SeedDefaultDataAsync(db, user.Id);
         }
     }
 }

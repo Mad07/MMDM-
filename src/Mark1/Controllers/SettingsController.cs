@@ -2,6 +2,7 @@ using Mark1.Data;
 using Mark1.Models;
 using Mark1.Models.ViewModels;
 using Mark1.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +12,13 @@ namespace Mark1.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly ICurrencyService _currencyService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public SettingsController(ApplicationDbContext db, ICurrencyService currencyService)
+        public SettingsController(ApplicationDbContext db, ICurrencyService currencyService, UserManager<ApplicationUser> userManager)
         {
             _db = db;
             _currencyService = currencyService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string tab = "categories")
@@ -25,8 +28,10 @@ namespace Mark1.Controllers
             var vm = new SettingsViewModel
             {
                 ActiveTab = tab,
+                CurrentUserId = CurrentUserId,
                 Categories = await _db.Categories.Where(c => c.UserId == CurrentUserId).OrderBy(c => c.Name).ToListAsync(),
                 Accounts = await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync(),
+                Users = await _userManager.Users.OrderBy(u => u.Email).ToListAsync(),
                 CurrencySettings = settings
             };
 
@@ -114,6 +119,52 @@ namespace Mark1.Controllers
                 }
             }
             return RedirectToAction(nameof(Index), new { tab = "accounts" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUser(string email, string password, string confirmPassword)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                TempData["SettingsError"] = "Email and password are required.";
+                return RedirectToAction(nameof(Index), new { tab = "users" });
+            }
+
+            if (password != confirmPassword)
+            {
+                TempData["SettingsError"] = "Passwords don't match.";
+                return RedirectToAction(nameof(Index), new { tab = "users" });
+            }
+
+            var user = new ApplicationUser { UserName = email.Trim(), Email = email.Trim(), EmailConfirmed = true };
+            var result = await _userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                TempData["SettingsError"] = string.Join(" ", result.Errors.Select(e => e.Description));
+                return RedirectToAction(nameof(Index), new { tab = "users" });
+            }
+
+            await IdentitySeeder.SeedDefaultDataAsync(_db, user.Id);
+            return RedirectToAction(nameof(Index), new { tab = "users" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            if (id == CurrentUserId)
+            {
+                TempData["SettingsError"] = "You can't delete the account you're currently logged in as.";
+                return RedirectToAction(nameof(Index), new { tab = "users" });
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
+            return RedirectToAction(nameof(Index), new { tab = "users" });
         }
 
         [HttpPost]

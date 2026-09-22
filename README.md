@@ -1,6 +1,6 @@
 # MMDM Expense Tracker (Mark1)
 
-Personal expense/income tracker built with ASP.NET Core MVC (.NET 8) + EF Core + SQLite.
+Personal expense/income tracker built with ASP.NET Core MVC (.NET 8) + EF Core + PostgreSQL.
 
 This repository is a from-scratch reimplementation of the app described in
 [`PROJECT_STATUS.md`](PROJECT_STATUS.md), built directly in this repo rather than
@@ -37,26 +37,30 @@ Source lives under [`src/Mark1`](src/Mark1).
 
 ## Not yet done / next steps
 
-1. **Azure deployment** - no Azure account/subscription wired up yet. Would need: swap the EF
-   Core provider off SQLite (Azure SQL or Postgres), move secrets (seed password, connection
-   string) to App Service configuration / Key Vault, deploy via `az webapp up` or CI.
+1. **Azure deployment** - Azure account exists now; App Service + Azure Database for PostgreSQL
+   still need to be provisioned, secrets (seed password, connection string) moved to App Service
+   configuration / Key Vault, and deploy via `az webapp up` or CI.
 2. **Budgets per category** - not started (would be per-category, per-currency, monthly).
 
 ## How to run locally
+
+Requires a reachable PostgreSQL server (a local install, a Docker container, or the Azure
+Database for PostgreSQL instance used for this app).
 
 ```bash
 cd src/Mark1
 dotnet user-secrets init
 dotnet user-secrets set "Seed:AdminEmail" "you@example.com"
 dotnet user-secrets set "Seed:AdminPassword" "ChangeMe123"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Database=mark1;Username=postgres;Password=yourpassword"
 export ASPNETCORE_ENVIRONMENT=Development   # required for user-secrets to load
 dotnet build
 dotnet run
 # then browse to the URL printed in the console and log in with the seeded credentials
 ```
 
-The SQLite database (`mark1.db`) and migrations are created/applied automatically on first
-run (`Program.cs` calls `db.Database.Migrate()` at startup).
+Migrations are applied automatically on first run (`Program.cs` calls `db.Database.Migrate()`
+at startup) - the database itself just needs to already exist on the server.
 
 ### EF Core migrations
 

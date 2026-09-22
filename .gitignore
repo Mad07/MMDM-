@@ -3,7 +3,7 @@ bin/
 obj/
 *.user
 
-## SQLite runtime database (never committed - seeded fresh on first run)
+## Local SQLite leftovers (app now runs on PostgreSQL; kept in case of local experiments)
 *.db
 *.db-shm
 *.db-wal

@@ -1,4 +1,5 @@
 using Mark1.Data;
+using Mark1.Helpers;
 using Mark1.Models;
 using Mark1.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -193,7 +194,7 @@ namespace Mark1.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetCategoryOptionsAsync() =>
             (await _db.Categories.Where(c => c.UserId == CurrentUserId).OrderBy(c => c.Name).ToListAsync())
-                .Select(c => new SelectListItem(c.Name, c.Id.ToString()));
+                .Select(c => new SelectListItem(CategoryDisplay.Localize(c.Name, _localizer), c.Id.ToString()));
 
         private async Task<IEnumerable<SelectListItem>> GetAccountOptionsAsync() =>
             (await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync())
