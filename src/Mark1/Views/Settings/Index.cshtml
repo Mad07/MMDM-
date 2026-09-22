@@ -57,7 +57,7 @@ else if (Model.ActiveTab == "accounts")
             @foreach (var account in Model.Accounts)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    @account.Name
+                    @AccountDisplay.Localize(account.Name, Localizer)
                     <form asp-action="DeleteAccount" method="post" onsubmit="return confirm('@Localizer["Settings_ConfirmDeleteAccount"]');">
                         <input type="hidden" name="id" value="@account.Id" />
                         <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>

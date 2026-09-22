@@ -1,4 +1,5 @@
 using Mark1.Data;
+using Mark1.Helpers;
 using Mark1.Models;
 using Mark1.Models.ViewModels;
 using Mark1.Services;
@@ -62,7 +63,7 @@ namespace Mark1.Controllers
 
                 vm.AccountCards.Add(new AccountCardViewModel
                 {
-                    AccountName = account.Name,
+                    AccountName = AccountDisplay.Localize(account.Name, _localizer),
                     NetUsd = netUsd,
                     NetCrc = netCrc,
                     NetMixedUsd = netMixedUsd

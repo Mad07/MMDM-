@@ -5,60 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Mark1</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Mark1.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">MMDM Expense Tracker</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">@Localizer["Nav_Home"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Expenses" asp-action="Index">@Localizer["Nav_Expenses"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Incomes" asp-action="Index">@Localizer["Nav_Incomes"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Accounts" asp-action="Index">@Localizer["Nav_AccountOverview"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Settings" asp-action="Index">@Localizer["Nav_Settings"]</a>
-                        </li>
-                    </ul>
-                    <div class="d-flex align-items-center gap-2">
-                        <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                            <input type="hidden" name="culture" value="en" />
-                            <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en" ? "active" : "")">EN</button>
-                        </form>
-                        <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                            <input type="hidden" name="culture" value="es-CR" />
-                            <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "active" : "")">ES</button>
-                        </form>
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">@Localizer["Nav_Logout"]</button>
-                            </form>
-                        }
-                    </div>
-                </div>
+    <header class="site-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="site-header-brand" asp-controller="Home" asp-action="Index">MMDM Expense Tracker</a>
+            <div class="d-flex align-items-center gap-2">
+                <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    <input type="hidden" name="culture" value="en" />
+                    <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en" ? "active" : "")">EN</button>
+                </form>
+                <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    <input type="hidden" name="culture" value="es-CR" />
+                    <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "active" : "")">ES</button>
+                </form>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-light">@Localizer["Nav_Logout"]</button>
+                    </form>
+                }
             </div>
-        </nav>
+        </div>
     </header>
+    <nav class="site-nav navbar navbar-expand-sm navbar-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavCollapse" aria-controls="mainNavCollapse"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse" id="mainNavCollapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">@Localizer["Nav_Home"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Expenses" asp-action="Index">@Localizer["Nav_Expenses"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Incomes" asp-action="Index">@Localizer["Nav_Incomes"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Accounts" asp-action="Index">@Localizer["Nav_AccountOverview"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Settings" asp-action="Index">@Localizer["Nav_Settings"]</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 pt-3">
             @RenderBody()
         </main>
     </div>

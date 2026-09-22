@@ -5,6 +5,8 @@ namespace Mark1.Models.ViewModels
     public class TransactionFilterViewModel<TItem>
     {
         public List<TItem> Items { get; set; } = new();
+        public decimal TotalUsd { get; set; }
+        public decimal TotalCrc { get; set; }
 
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }

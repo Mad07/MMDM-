@@ -72,12 +72,18 @@
                     }
                 </td>
                 <td>@CategoryDisplay.Localize(expense.Category?.Name, Localizer)</td>
-                <td>@expense.Account?.Name</td>
+                <td>@AccountDisplay.Localize(expense.Account?.Name, Localizer)</td>
                 <td class="text-end amount-expense">@expense.Amount.ToString("N2") @expense.Currency</td>
                 <td class="text-end">
-                    <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-sm btn-outline-secondary">@Localizer["Common_Edit"]</a>
+                    <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-sm btn-outline-secondary btn-icon" title="@Localizer["Common_Edit"]">
+                        <i class="bi bi-pencil-square"></i>
+                        <span class="visually-hidden">@Localizer["Common_Edit"]</span>
+                    </a>
                     <form asp-action="Delete" asp-route-id="@expense.Id" method="post" class="d-inline" onsubmit="return confirm('@Localizer["Expenses_ConfirmDelete"]');">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="@Localizer["Common_Delete"]">
+                            <i class="bi bi-trash"></i>
+                            <span class="visually-hidden">@Localizer["Common_Delete"]</span>
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -88,4 +94,11 @@
 @if (!Model.Items.Any())
 {
     <p class="text-muted">@Localizer["Expenses_NoneFound"]</p>
+}
+else
+{
+    <div class="transaction-totals">
+        <div><span class="total-label">@Localizer["Expenses_TotalUsd"]</span><span class="total-value amount-expense">$@Model.TotalUsd.ToString("N2")</span></div>
+        <div><span class="total-label">@Localizer["Expenses_TotalCrc"]</span><span class="total-value amount-expense">&#8353;@Model.TotalCrc.ToString("N2")</span></div>
+    </div>
 }

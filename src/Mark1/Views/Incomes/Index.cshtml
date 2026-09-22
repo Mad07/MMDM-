@@ -69,12 +69,18 @@
                     }
                 </td>
                 <td>@CategoryDisplay.Localize(income.Category?.Name, Localizer)</td>
-                <td>@income.Account?.Name</td>
+                <td>@AccountDisplay.Localize(income.Account?.Name, Localizer)</td>
                 <td class="text-end amount-income">@income.Amount.ToString("N2") @income.Currency</td>
                 <td class="text-end">
-                    <a asp-action="Edit" asp-route-id="@income.Id" class="btn btn-sm btn-outline-secondary">@Localizer["Common_Edit"]</a>
+                    <a asp-action="Edit" asp-route-id="@income.Id" class="btn btn-sm btn-outline-secondary btn-icon" title="@Localizer["Common_Edit"]">
+                        <i class="bi bi-pencil-square"></i>
+                        <span class="visually-hidden">@Localizer["Common_Edit"]</span>
+                    </a>
                     <form asp-action="Delete" asp-route-id="@income.Id" method="post" class="d-inline" onsubmit="return confirm('@Localizer["Incomes_ConfirmDelete"]');">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="@Localizer["Common_Delete"]">
+                            <i class="bi bi-trash"></i>
+                            <span class="visually-hidden">@Localizer["Common_Delete"]</span>
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -85,4 +91,11 @@
 @if (!Model.Items.Any())
 {
     <p class="text-muted">@Localizer["Incomes_NoneFound"]</p>
+}
+else
+{
+    <div class="transaction-totals">
+        <div><span class="total-label">@Localizer["Incomes_TotalUsd"]</span><span class="total-value amount-income">$@Model.TotalUsd.ToString("N2")</span></div>
+        <div><span class="total-label">@Localizer["Incomes_TotalCrc"]</span><span class="total-value amount-income">&#8353;@Model.TotalCrc.ToString("N2")</span></div>
+    </div>
 }

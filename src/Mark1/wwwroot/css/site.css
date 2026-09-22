@@ -33,10 +33,33 @@ body {
   --brand-border: #e4e0d6;
 }
 
-.navbar-brand {
+/* ---- Split header / nav ---- */
+.site-header {
+  background: var(--brand-primary-dark);
+  padding: 0.6rem 0;
+}
+
+.site-header-brand {
   font-weight: 700;
-  color: var(--brand-primary-dark) !important;
+  color: #fff !important;
+  text-decoration: none;
+  font-size: 1.15rem;
   letter-spacing: 0.02em;
+}
+
+.site-nav {
+  background: var(--brand-surface);
+  border-bottom: 1px solid var(--brand-border);
+  margin-bottom: 1.5rem;
+}
+
+.site-nav .nav-link {
+  color: #4a4739;
+  font-weight: 500;
+}
+
+.site-nav .nav-link:hover {
+  color: var(--brand-primary-dark);
 }
 
 .btn-primary {
@@ -201,6 +224,37 @@ body {
 
 .month-tabs .nav-link {
   color: #6b6858;
+}
+
+/* ---- Icon action buttons ---- */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+/* ---- Transaction totals footer ---- */
+.transaction-totals {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.transaction-totals .total-label {
+  color: #8a8676;
+  font-size: 0.85rem;
+  margin-right: 0.35rem;
+}
+
+.transaction-totals .total-value {
+  font-weight: 700;
+  font-size: 1.05rem;
 }
 
 /* ---- Auth pages ---- */

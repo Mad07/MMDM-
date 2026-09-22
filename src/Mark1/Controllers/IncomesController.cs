@@ -47,6 +47,8 @@ namespace Mark1.Controllers
             var vm = new TransactionFilterViewModel<Income>
             {
                 Items = items,
+                TotalUsd = items.Where(i => i.Currency == Currency.USD).Sum(i => i.Amount),
+                TotalCrc = items.Where(i => i.Currency == Currency.CRC).Sum(i => i.Amount),
                 DateFrom = dateFrom,
                 DateTo = dateTo,
                 CategoryId = categoryId,
@@ -174,6 +176,6 @@ namespace Mark1.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetAccountOptionsAsync() =>
             (await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync())
-                .Select(a => new SelectListItem(a.Name, a.Id.ToString()));
+                .Select(a => new SelectListItem(AccountDisplay.Localize(a.Name, _localizer), a.Id.ToString()));
     }
 }
