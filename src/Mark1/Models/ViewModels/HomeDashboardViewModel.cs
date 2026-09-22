@@ -4,6 +4,8 @@ namespace Mark1.Models.ViewModels
 {
     public class HomeDashboardViewModel
     {
+        public Currency PrimaryCurrency { get; set; } = Currency.USD;
+
         public decimal SpendingThisMonthUsd { get; set; }
         public decimal SpendingThisMonthCrc { get; set; }
         public decimal IncomeThisMonthUsd { get; set; }

@@ -100,6 +100,8 @@
   <data name="Settings_CurrencyRate" xml:space="preserve"><value>Tipo de Cambio</value></data>
   <data name="Settings_NewCategoryPlaceholder" xml:space="preserve"><value>Nombre de nueva categoría</value></data>
   <data name="Settings_NewAccountPlaceholder" xml:space="preserve"><value>Nombre de nueva cuenta</value></data>
+  <data name="Settings_PrimaryCurrency" xml:space="preserve"><value>Moneda Principal</value></data>
+  <data name="Settings_PrimaryCurrencyHint" xml:space="preserve"><value>Se usa como moneda predeterminada para nuevos registros, y se muestra primero donde aparezcan montos en ambas monedas.</value></data>
   <data name="Settings_FixedRateLabel" xml:space="preserve"><value>Tipo de cambio fijo (CRC por USD)</value></data>
   <data name="Settings_UseLiveRate" xml:space="preserve"><value>Intentar tipo de cambio en vivo primero (usa el fijo si no está disponible)</value></data>
   <data name="Settings_LiveRateNow" xml:space="preserve"><value>Tipo de cambio en vivo ahora:</value></data>

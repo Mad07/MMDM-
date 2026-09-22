@@ -46,6 +46,7 @@ namespace Mark1.Controllers
 
             var vm = new AccountOverviewViewModel
             {
+                PrimaryCurrency = settings.PrimaryCurrency,
                 SelectedPeriod = period,
                 PeriodOptions = BuildPeriodOptions(_localizer)
             };

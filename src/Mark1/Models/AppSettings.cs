@@ -12,6 +12,11 @@ namespace Mark1.Models
 
         public bool UseLiveRate { get; set; }
 
+        /// <summary>Drives which currency's figures appear as the primary (larger) value in
+        /// dual-currency displays (Home stats, Account Overview totals) and the default currency
+        /// pre-selected when adding a new Expense/Income.</summary>
+        public Currency PrimaryCurrency { get; set; } = Currency.USD;
+
         public string UserId { get; set; } = string.Empty;
         public ApplicationUser? User { get; set; }
     }

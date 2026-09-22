@@ -34,8 +34,11 @@ public class HomeController : AuthorizedController
             .Where(i => i.UserId == CurrentUserId && i.Date >= monthStart && i.Date < monthEnd)
             .ToListAsync();
 
+        var settings = await _db.AppSettings.FirstOrDefaultAsync(s => s.UserId == CurrentUserId);
+
         var vm = new HomeDashboardViewModel
         {
+            PrimaryCurrency = settings?.PrimaryCurrency ?? Currency.USD,
             SpendingThisMonthUsd = expensesThisMonth.Where(e => e.Currency == Currency.USD).Sum(e => e.Amount),
             SpendingThisMonthCrc = expensesThisMonth.Where(e => e.Currency == Currency.CRC).Sum(e => e.Amount),
             IncomeThisMonthUsd = incomesThisMonth.Where(i => i.Currency == Currency.USD).Sum(i => i.Amount),

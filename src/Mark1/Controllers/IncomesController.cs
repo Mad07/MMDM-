@@ -65,8 +65,10 @@ namespace Mark1.Controllers
 
         public async Task<IActionResult> Create()
         {
+            var settings = await _db.AppSettings.FirstOrDefaultAsync(s => s.UserId == CurrentUserId);
             var vm = new IncomeFormViewModel
             {
+                Currency = settings?.PrimaryCurrency ?? Currency.USD,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };

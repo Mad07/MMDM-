@@ -15,23 +15,46 @@
     </form>
 </div>
 
+@{ var crcIsPrimary = Model.PrimaryCurrency == Mark1.Models.Currency.CRC; }
 <div class="stat-tiles">
-    <div class="stat-tile">
-        <div class="stat-label">@Localizer["AccountOverview_UsdOnly"]</div>
-        <div class="stat-value">$@Model.GrandTotalUsdOnly.ToString("N2")</div>
-    </div>
-    <div class="stat-tile">
-        <div class="stat-label">@Localizer["AccountOverview_CrcOnly"]</div>
-        <div class="stat-value">&#8353;@Model.GrandTotalCrcOnly.ToString("N2")</div>
-    </div>
-    <div class="stat-tile">
-        <div class="stat-label">@Localizer["AccountOverview_AllUsd"]</div>
-        <div class="stat-value">$@Model.GrandTotalUsdMixed.ToString("N2")</div>
-    </div>
-    <div class="stat-tile">
-        <div class="stat-label">@Localizer["AccountOverview_AllCrc"]</div>
-        <div class="stat-value">&#8353;@Model.GrandTotalCrcMixed.ToString("N2")</div>
-    </div>
+    @if (crcIsPrimary)
+    {
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_CrcOnly"]</div>
+            <div class="stat-value">&#8353;@Model.GrandTotalCrcOnly.ToString("N2")</div>
+        </div>
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_UsdOnly"]</div>
+            <div class="stat-value">$@Model.GrandTotalUsdOnly.ToString("N2")</div>
+        </div>
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_AllCrc"]</div>
+            <div class="stat-value">&#8353;@Model.GrandTotalCrcMixed.ToString("N2")</div>
+        </div>
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_AllUsd"]</div>
+            <div class="stat-value">$@Model.GrandTotalUsdMixed.ToString("N2")</div>
+        </div>
+    }
+    else
+    {
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_UsdOnly"]</div>
+            <div class="stat-value">$@Model.GrandTotalUsdOnly.ToString("N2")</div>
+        </div>
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_CrcOnly"]</div>
+            <div class="stat-value">&#8353;@Model.GrandTotalCrcOnly.ToString("N2")</div>
+        </div>
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_AllUsd"]</div>
+            <div class="stat-value">$@Model.GrandTotalUsdMixed.ToString("N2")</div>
+        </div>
+        <div class="stat-tile">
+            <div class="stat-label">@Localizer["AccountOverview_AllCrc"]</div>
+            <div class="stat-value">&#8353;@Model.GrandTotalCrcMixed.ToString("N2")</div>
+        </div>
+    }
 </div>
 
 <div class="accordion mt-4" id="accountAccordion">

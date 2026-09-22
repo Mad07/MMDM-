@@ -5,16 +5,33 @@
 
 <h1 class="page-title">@Localizer["Home_Title"]</h1>
 
+@{ var crcIsPrimary = Model.PrimaryCurrency == Currency.CRC; }
 <div class="stat-tiles">
     <div class="stat-tile stat-expense">
         <div class="stat-label">@Localizer["Home_SpendingThisMonth"]</div>
-        <div class="stat-value">$@Model.SpendingThisMonthUsd.ToString("N2")</div>
-        <div class="stat-sub">&#8353;@Model.SpendingThisMonthCrc.ToString("N2")</div>
+        @if (crcIsPrimary)
+        {
+            <div class="stat-value">&#8353;@Model.SpendingThisMonthCrc.ToString("N2")</div>
+            <div class="stat-sub">$@Model.SpendingThisMonthUsd.ToString("N2")</div>
+        }
+        else
+        {
+            <div class="stat-value">$@Model.SpendingThisMonthUsd.ToString("N2")</div>
+            <div class="stat-sub">&#8353;@Model.SpendingThisMonthCrc.ToString("N2")</div>
+        }
     </div>
     <div class="stat-tile stat-income">
         <div class="stat-label">@Localizer["Home_IncomeThisMonth"]</div>
-        <div class="stat-value">$@Model.IncomeThisMonthUsd.ToString("N2")</div>
-        <div class="stat-sub">&#8353;@Model.IncomeThisMonthCrc.ToString("N2")</div>
+        @if (crcIsPrimary)
+        {
+            <div class="stat-value">&#8353;@Model.IncomeThisMonthCrc.ToString("N2")</div>
+            <div class="stat-sub">$@Model.IncomeThisMonthUsd.ToString("N2")</div>
+        }
+        else
+        {
+            <div class="stat-value">$@Model.IncomeThisMonthUsd.ToString("N2")</div>
+            <div class="stat-sub">&#8353;@Model.IncomeThisMonthCrc.ToString("N2")</div>
+        }
     </div>
     <div class="stat-tile">
         <div class="stat-label">@Localizer["Home_ExpensesLogged"]</div>
@@ -27,22 +44,44 @@
 </div>
 
 <div class="chart-grid">
-    <div class="chart-card">
-        <h2>@Localizer["Home_CategoryUsd"]</h2>
-        <canvas id="chartCategoryUsd"></canvas>
-    </div>
-    <div class="chart-card">
-        <h2>@Localizer["Home_CategoryCrc"]</h2>
-        <canvas id="chartCategoryCrc"></canvas>
-    </div>
-    <div class="chart-card">
-        <h2>@Localizer["Home_TrendUsd"]</h2>
-        <canvas id="chartTrendUsd"></canvas>
-    </div>
-    <div class="chart-card">
-        <h2>@Localizer["Home_TrendCrc"]</h2>
-        <canvas id="chartTrendCrc"></canvas>
-    </div>
+    @if (crcIsPrimary)
+    {
+        <div class="chart-card">
+            <h2>@Localizer["Home_CategoryCrc"]</h2>
+            <canvas id="chartCategoryCrc"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>@Localizer["Home_CategoryUsd"]</h2>
+            <canvas id="chartCategoryUsd"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>@Localizer["Home_TrendCrc"]</h2>
+            <canvas id="chartTrendCrc"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>@Localizer["Home_TrendUsd"]</h2>
+            <canvas id="chartTrendUsd"></canvas>
+        </div>
+    }
+    else
+    {
+        <div class="chart-card">
+            <h2>@Localizer["Home_CategoryUsd"]</h2>
+            <canvas id="chartCategoryUsd"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>@Localizer["Home_CategoryCrc"]</h2>
+            <canvas id="chartCategoryCrc"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>@Localizer["Home_TrendUsd"]</h2>
+            <canvas id="chartTrendUsd"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>@Localizer["Home_TrendCrc"]</h2>
+            <canvas id="chartTrendCrc"></canvas>
+        </div>
+    }
 </div>
 
 <div class="recent-grid">

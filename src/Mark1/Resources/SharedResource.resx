@@ -100,6 +100,8 @@
   <data name="Settings_CurrencyRate" xml:space="preserve"><value>Currency Rate</value></data>
   <data name="Settings_NewCategoryPlaceholder" xml:space="preserve"><value>New category name</value></data>
   <data name="Settings_NewAccountPlaceholder" xml:space="preserve"><value>New account name</value></data>
+  <data name="Settings_PrimaryCurrency" xml:space="preserve"><value>Primary Currency</value></data>
+  <data name="Settings_PrimaryCurrencyHint" xml:space="preserve"><value>Used as the default currency for new entries, and shown first wherever amounts appear in both currencies.</value></data>
   <data name="Settings_FixedRateLabel" xml:space="preserve"><value>Fixed CRC per USD rate</value></data>
   <data name="Settings_UseLiveRate" xml:space="preserve"><value>Try live rate lookup first (falls back to fixed rate if unavailable)</value></data>
   <data name="Settings_LiveRateNow" xml:space="preserve"><value>Live rate right now:</value></data>

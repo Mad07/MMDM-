@@ -1,3 +1,5 @@
+using Mark1.Models;
+
 namespace Mark1.Models.ViewModels
 {
     public class AccountCardViewModel
@@ -12,6 +14,8 @@ namespace Mark1.Models.ViewModels
 
     public class AccountOverviewViewModel
     {
+        public Currency PrimaryCurrency { get; set; } = Currency.USD;
+
         public string SelectedPeriod { get; set; } = "all";
         public List<(string Value, string Label)> PeriodOptions { get; set; } = new();
 

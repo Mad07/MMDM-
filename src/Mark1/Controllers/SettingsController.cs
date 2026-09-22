@@ -169,11 +169,12 @@ namespace Mark1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateCurrency(decimal fixedExchangeRate, bool useLiveRate)
+        public async Task<IActionResult> UpdateCurrency(decimal fixedExchangeRate, bool useLiveRate, Currency primaryCurrency)
         {
             var settings = await GetOrCreateSettingsAsync();
             settings.FixedExchangeRate = fixedExchangeRate;
             settings.UseLiveRate = useLiveRate;
+            settings.PrimaryCurrency = primaryCurrency;
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index), new { tab = "currency" });
         }
