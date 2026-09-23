@@ -314,7 +314,7 @@ namespace Mark1.Controllers
             var purpose = await _db.SavingsPurposes.FirstOrDefaultAsync(sp => sp.Id == id && sp.UserId == CurrentUserId);
             if (purpose != null)
             {
-                var inUse = await _db.Expenses.AnyAsync(e => e.SavingsPurposeId == id);
+                var inUse = await _db.Expenses.AnyAsync(e => e.SavingsPurposeId == id) || await _db.Incomes.AnyAsync(i => i.SavingsPurposeId == id);
                 if (!inUse)
                 {
                     _db.SavingsPurposes.Remove(purpose);

@@ -42,6 +42,19 @@ document.addEventListener('change', function (event) {
             purposeGroup.style.display = anyChecked ? 'block' : 'none';
         }
     }
+
+    // Income form: reveal the purpose dropdown only when the chosen account is Savings/Retained.
+    var accountSelect = event.target;
+    if (accountSelect.classList.contains('savings-target-account')) {
+        var incomeForm = accountSelect.closest('form');
+        var incomePurposeGroup = incomeForm && incomeForm.querySelector('.savings-purpose-group');
+        if (incomePurposeGroup) {
+            var savingsId = accountSelect.getAttribute('data-savings-account-id');
+            var retainedId = accountSelect.getAttribute('data-retained-account-id');
+            var isMatch = accountSelect.value !== '' && (accountSelect.value === savingsId || accountSelect.value === retainedId);
+            incomePurposeGroup.style.display = isMatch ? 'block' : 'none';
+        }
+    }
 });
 
 // Inline rename UI (e.g. Settings' category/account lists): swaps a row's display view for an

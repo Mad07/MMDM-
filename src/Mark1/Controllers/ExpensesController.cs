@@ -332,6 +332,7 @@ namespace Mark1.Controllers
             income.Date = expense.Date;
             income.CategoryId = transferCategory.Id;
             income.AccountId = targetAccount.Id;
+            income.SavingsPurposeId = expense.SavingsPurposeId;
 
             await _db.SaveChangesAsync();
             expense.TransferIncomeId = income.Id;

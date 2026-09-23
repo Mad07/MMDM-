@@ -29,6 +29,12 @@ namespace Mark1.Models
 
         public DateTime? NextOccurrenceDate { get; set; }
 
+        /// <summary>Only meaningful when the Account is literally named "Savings" or "Retained" -
+        /// what this deposit is for, so Account Overview can break the balance down by purpose.
+        /// Cleared server-side whenever the account isn't one of those two.</summary>
+        public int? SavingsPurposeId { get; set; }
+        public SavingsPurpose? SavingsPurpose { get; set; }
+
         public string UserId { get; set; } = string.Empty;
         public ApplicationUser? User { get; set; }
     }

@@ -40,7 +40,8 @@
 
     <div class="mb-3">
         <label asp-for="AccountId" class="form-label">@Localizer["Common_Account"]</label>
-        <select asp-for="AccountId" class="form-select" asp-items="Model.AccountOptions">
+        <select asp-for="AccountId" class="form-select savings-target-account" asp-items="Model.AccountOptions"
+                data-savings-account-id="@Model.SavingsAccountId" data-retained-account-id="@Model.RetainedAccountId">
             <option value="">@Localizer["Common_SelectAccount"]</option>
         </select>
         <span asp-validation-for="AccountId" class="text-danger"></span>
@@ -49,6 +50,14 @@
     <div class="mb-3 form-check">
         <input asp-for="RepeatsMonthly" class="form-check-input" />
         <label asp-for="RepeatsMonthly" class="form-check-label">@Localizer["Common_RepeatsMonthly"]</label>
+    </div>
+
+    @{ var showPurpose = Model.AccountId != 0 && (Model.AccountId == Model.SavingsAccountId || Model.AccountId == Model.RetainedAccountId); }
+    <div class="mb-3 savings-purpose-group" style="display:@(showPurpose ? "block" : "none");">
+        <label asp-for="SavingsPurposeId" class="form-label">@Localizer["Expenses_SavingsPurpose"]</label>
+        <select asp-for="SavingsPurposeId" class="form-select" asp-items="Model.SavingsPurposeOptions">
+            <option value="">@Localizer["Expenses_SelectSavingsPurpose"]</option>
+        </select>
     </div>
 
     <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>

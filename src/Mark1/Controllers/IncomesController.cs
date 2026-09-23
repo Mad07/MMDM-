@@ -80,12 +80,16 @@ namespace Mark1.Controllers
         public async Task<IActionResult> Create(string? returnUrl)
         {
             var settings = await _db.AppSettings.FirstOrDefaultAsync(s => s.UserId == CurrentUserId);
+            var (savingsAccountId, retainedAccountId) = await GetSavingsAndRetainedAccountIdsAsync();
             var vm = new IncomeFormViewModel
             {
                 Currency = settings?.PrimaryCurrency ?? Currency.USD,
                 ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
-                AccountOptions = await GetAccountOptionsAsync()
+                AccountOptions = await GetAccountOptionsAsync(),
+                SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync(),
+                SavingsAccountId = savingsAccountId,
+                RetainedAccountId = retainedAccountId
             };
             return View(vm);
         }
@@ -98,9 +102,12 @@ namespace Mark1.Controllers
             {
                 model.CategoryOptions = await GetCategoryOptionsAsync();
                 model.AccountOptions = await GetAccountOptionsAsync();
+                model.SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync();
+                (model.SavingsAccountId, model.RetainedAccountId) = await GetSavingsAndRetainedAccountIdsAsync();
                 return View(model);
             }
 
+            var isSavingsOrRetained = await IsSavingsOrRetainedAccountAsync(model.AccountId);
             var income = new Income
             {
                 Description = model.Description,
@@ -111,6 +118,7 @@ namespace Mark1.Controllers
                 AccountId = model.AccountId,
                 RepeatsMonthly = model.RepeatsMonthly,
                 NextOccurrenceDate = model.RepeatsMonthly ? model.Date.AddMonths(1) : null,
+                SavingsPurposeId = isSavingsOrRetained ? model.SavingsPurposeId : null,
                 UserId = CurrentUserId
             };
             _db.Incomes.Add(income);
@@ -123,6 +131,7 @@ namespace Mark1.Controllers
             var income = await _db.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == CurrentUserId);
             if (income == null) return NotFound();
 
+            var (savingsAccountId, retainedAccountId) = await GetSavingsAndRetainedAccountIdsAsync();
             var vm = new IncomeFormViewModel
             {
                 Id = income.Id,
@@ -133,9 +142,13 @@ namespace Mark1.Controllers
                 CategoryId = income.CategoryId,
                 AccountId = income.AccountId,
                 RepeatsMonthly = income.RepeatsMonthly,
+                SavingsPurposeId = income.SavingsPurposeId,
                 ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
-                AccountOptions = await GetAccountOptionsAsync()
+                AccountOptions = await GetAccountOptionsAsync(),
+                SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync(),
+                SavingsAccountId = savingsAccountId,
+                RetainedAccountId = retainedAccountId
             };
             return View(vm);
         }
@@ -151,6 +164,8 @@ namespace Mark1.Controllers
             {
                 model.CategoryOptions = await GetCategoryOptionsAsync();
                 model.AccountOptions = await GetAccountOptionsAsync();
+                model.SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync();
+                (model.SavingsAccountId, model.RetainedAccountId) = await GetSavingsAndRetainedAccountIdsAsync();
                 return View(model);
             }
 
@@ -170,6 +185,7 @@ namespace Mark1.Controllers
                 income.NextOccurrenceDate = null;
             }
             income.RepeatsMonthly = model.RepeatsMonthly;
+            income.SavingsPurposeId = await IsSavingsOrRetainedAccountAsync(model.AccountId) ? model.SavingsPurposeId : null;
 
             await _db.SaveChangesAsync();
             return RedirectToLocalOrIndex(model.ReturnUrl);
@@ -220,5 +236,23 @@ namespace Mark1.Controllers
         private async Task<IEnumerable<SelectListItem>> GetAccountOptionsAsync() =>
             (await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync())
                 .Select(a => new SelectListItem(AccountDisplay.Localize(a.Name, _localizer), a.Id.ToString()));
+
+        private async Task<IEnumerable<SelectListItem>> GetSavingsPurposeOptionsAsync() =>
+            (await _db.SavingsPurposes.Where(sp => sp.UserId == CurrentUserId).OrderBy(sp => sp.Name).ToListAsync())
+                .Select(sp => new SelectListItem(sp.Name, sp.Id.ToString()));
+
+        private async Task<(int? SavingsAccountId, int? RetainedAccountId)> GetSavingsAndRetainedAccountIdsAsync()
+        {
+            var accounts = await _db.Accounts
+                .Where(a => a.UserId == CurrentUserId && (a.Name == "Savings" || a.Name == "Retained"))
+                .ToListAsync();
+            return (accounts.FirstOrDefault(a => a.Name == "Savings")?.Id, accounts.FirstOrDefault(a => a.Name == "Retained")?.Id);
+        }
+
+        private async Task<bool> IsSavingsOrRetainedAccountAsync(int accountId)
+        {
+            var (savingsAccountId, retainedAccountId) = await GetSavingsAndRetainedAccountIdsAsync();
+            return accountId == savingsAccountId || accountId == retainedAccountId;
+        }
     }
 }

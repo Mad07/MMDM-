@@ -78,6 +78,12 @@ namespace Mark1.Data
             builder.Entity<Income>().Property(i => i.Date).HasColumnType("date");
             builder.Entity<Income>().Property(i => i.NextOccurrenceDate).HasColumnType("date");
 
+            builder.Entity<Income>()
+                .HasOne(i => i.SavingsPurpose)
+                .WithMany()
+                .HasForeignKey(i => i.SavingsPurposeId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Entity<Category>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.Categories)

@@ -84,15 +84,23 @@ namespace Mark1.Controllers
                         ? expenses.Where(e => e.IsTransferToSavings && e.IsPaid)
                         : expenses.Where(e => e.IsTransferToRetained && e.IsPaid);
 
+                    // Incomes auto-created by a transfer expense are already represented via that
+                    // expense above - only fold in incomes the user entered directly on this account
+                    // (e.g. a manual deposit), so nothing gets double-counted.
+                    var transferIncomeIds = expenses.Where(e => e.TransferIncomeId.HasValue).Select(e => e.TransferIncomeId!.Value).ToHashSet();
+                    var manualIncomes = incomes.Where(i => i.AccountId == account.Id && !transferIncomeIds.Contains(i.Id));
+
                     card.PurposeBreakdown = transferredExpenses
-                        .GroupBy(e => e.SavingsPurposeId)
+                        .Select(e => new { e.SavingsPurposeId, AmountUsd = e.Currency == Currency.USD ? e.Amount : 0m, AmountCrc = e.Currency == Currency.CRC ? e.Amount : 0m })
+                        .Concat(manualIncomes.Select(i => new { i.SavingsPurposeId, AmountUsd = i.Currency == Currency.USD ? i.Amount : 0m, AmountCrc = i.Currency == Currency.CRC ? i.Amount : 0m }))
+                        .GroupBy(x => x.SavingsPurposeId)
                         .Select(g => new SavingsPurposeBreakdownItem
                         {
                             PurposeName = g.Key.HasValue && purposeNames.TryGetValue(g.Key.Value, out var name)
                                 ? name
                                 : _localizer["Common_NoPurpose"],
-                            AmountUsd = g.Where(e => e.Currency == Currency.USD).Sum(e => e.Amount),
-                            AmountCrc = g.Where(e => e.Currency == Currency.CRC).Sum(e => e.Amount)
+                            AmountUsd = g.Sum(x => x.AmountUsd),
+                            AmountCrc = g.Sum(x => x.AmountCrc)
                         })
                         .OrderBy(b => b.PurposeName)
                         .ToList();
