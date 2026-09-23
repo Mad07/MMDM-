@@ -18,6 +18,9 @@ namespace Mark1.Models.ViewModels
         public string? Month { get; set; }
         public List<(string Value, string Label)> MonthTabs { get; set; } = new();
 
+        public string SortBy { get; set; } = "date";
+        public bool SortDescending { get; set; } = true;
+
         public IEnumerable<SelectListItem> CategoryOptions { get; set; } = Enumerable.Empty<SelectListItem>();
         public IEnumerable<SelectListItem> AccountOptions { get; set; } = Enumerable.Empty<SelectListItem>();
     }

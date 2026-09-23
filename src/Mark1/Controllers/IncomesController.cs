@@ -20,7 +20,7 @@ namespace Mark1.Controllers
             _localizer = localizer;
         }
 
-        public async Task<IActionResult> Index(DateTime? dateFrom, DateTime? dateTo, int? categoryId, int? accountId, Currency? currency, string? month)
+        public async Task<IActionResult> Index(DateTime? dateFrom, DateTime? dateTo, int? categoryId, int? accountId, Currency? currency, string? month, string? sortBy, string? sortDir)
         {
             var query = _db.Incomes
                 .Include(i => i.Category)
@@ -42,7 +42,19 @@ namespace Mark1.Controllers
             if (accountId.HasValue) query = query.Where(i => i.AccountId == accountId.Value);
             if (currency.HasValue) query = query.Where(i => i.Currency == currency.Value);
 
-            var items = await query.OrderByDescending(i => i.Date).ToListAsync();
+            var effectiveSortBy = string.IsNullOrEmpty(sortBy) ? "date" : sortBy;
+            var effectiveSortDescending = string.IsNullOrEmpty(sortBy) || sortDir == "desc";
+
+            IOrderedQueryable<Income> ordered = effectiveSortBy switch
+            {
+                "description" => effectiveSortDescending ? query.OrderByDescending(i => i.Description) : query.OrderBy(i => i.Description),
+                "category" => effectiveSortDescending ? query.OrderByDescending(i => i.Category!.Name) : query.OrderBy(i => i.Category!.Name),
+                "account" => effectiveSortDescending ? query.OrderByDescending(i => i.Account!.Name) : query.OrderBy(i => i.Account!.Name),
+                "amount" => effectiveSortDescending ? query.OrderByDescending(i => i.Amount) : query.OrderBy(i => i.Amount),
+                _ => effectiveSortDescending ? query.OrderByDescending(i => i.Date) : query.OrderBy(i => i.Date),
+            };
+
+            var items = await ordered.ToListAsync();
 
             var vm = new TransactionFilterViewModel<Income>
             {
@@ -55,6 +67,8 @@ namespace Mark1.Controllers
                 AccountId = accountId,
                 Currency = currency,
                 Month = string.IsNullOrEmpty(month) ? "all" : month,
+                SortBy = effectiveSortBy,
+                SortDescending = effectiveSortDescending,
                 MonthTabs = ExpensesController.BuildMonthTabs(_localizer),
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
@@ -63,12 +77,13 @@ namespace Mark1.Controllers
             return View(vm);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string? returnUrl)
         {
             var settings = await _db.AppSettings.FirstOrDefaultAsync(s => s.UserId == CurrentUserId);
             var vm = new IncomeFormViewModel
             {
                 Currency = settings?.PrimaryCurrency ?? Currency.USD,
+                ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -100,10 +115,10 @@ namespace Mark1.Controllers
             };
             _db.Incomes.Add(income);
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToLocalOrIndex(model.ReturnUrl);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string? returnUrl)
         {
             var income = await _db.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == CurrentUserId);
             if (income == null) return NotFound();
@@ -118,6 +133,7 @@ namespace Mark1.Controllers
                 CategoryId = income.CategoryId,
                 AccountId = income.AccountId,
                 RepeatsMonthly = income.RepeatsMonthly,
+                ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -156,7 +172,7 @@ namespace Mark1.Controllers
             income.RepeatsMonthly = model.RepeatsMonthly;
 
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToLocalOrIndex(model.ReturnUrl);
         }
 
         [HttpPost]
@@ -168,6 +184,31 @@ namespace Mark1.Controllers
             {
                 _db.Incomes.Remove(income);
                 await _db.SaveChangesAsync();
+            }
+            return RedirectToReferrerOrIndex();
+        }
+
+        /// <summary>Redirects to returnUrl if it's set and points at this app, otherwise Index -
+        /// used by Create/Edit so saving from a filtered/sorted list view returns to that same view
+        /// instead of always resetting to the plain unfiltered list.</summary>
+        private IActionResult RedirectToLocalOrIndex(string? returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>Same idea as RedirectToLocalOrIndex, but for actions (like Delete) whose button
+        /// lives directly on the Index page itself, so the Referer header already is that filtered
+        /// URL - no returnUrl field needed.</summary>
+        private IActionResult RedirectToReferrerOrIndex()
+        {
+            var referer = Request.Headers.Referer.ToString();
+            if (Uri.TryCreate(referer, UriKind.Absolute, out var refererUri) && refererUri.Host == Request.Host.Host)
+            {
+                return Redirect(refererUri.PathAndQuery);
             }
             return RedirectToAction(nameof(Index));
         }

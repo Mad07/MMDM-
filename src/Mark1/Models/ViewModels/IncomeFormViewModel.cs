@@ -26,6 +26,10 @@ namespace Mark1.Models.ViewModels
 
         public bool RepeatsMonthly { get; set; }
 
+        /// <summary>Where to redirect after saving - carries forward whatever filtered/sorted
+        /// Incomes view the user came from, instead of always resetting to the unfiltered list.</summary>
+        public string? ReturnUrl { get; set; }
+
         public IEnumerable<SelectListItem> CategoryOptions { get; set; } = Enumerable.Empty<SelectListItem>();
         public IEnumerable<SelectListItem> AccountOptions { get; set; } = Enumerable.Empty<SelectListItem>();
     }

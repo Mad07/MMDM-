@@ -3,6 +3,7 @@
 <form method="post" class="col-md-6">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ReturnUrl" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="mb-3">
@@ -51,5 +52,5 @@
     </div>
 
     <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>
-    <a asp-action="Index" class="btn btn-outline-secondary">@Localizer["Common_Cancel"]</a>
+    <a href="@(Model.ReturnUrl != null && Url.IsLocalUrl(Model.ReturnUrl) ? Model.ReturnUrl : Url.Action("Index"))" class="btn btn-outline-secondary">@Localizer["Common_Cancel"]</a>
 </form>

@@ -124,6 +124,28 @@ namespace Mark1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RenameAccount(int id, string name)
+        {
+            var account = await _db.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.UserId == CurrentUserId);
+            if (account != null && !string.IsNullOrWhiteSpace(name))
+            {
+                var trimmed = name.Trim();
+                var duplicate = await _db.Accounts.AnyAsync(a => a.UserId == CurrentUserId && a.Id != id && a.Name.ToLower() == trimmed.ToLower());
+                if (duplicate)
+                {
+                    TempData["SettingsError"] = "An account with that name already exists.";
+                }
+                else
+                {
+                    account.Name = trimmed;
+                    await _db.SaveChangesAsync();
+                }
+            }
+            return RedirectToAction(nameof(Index), new { tab = "accounts" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAccount(int id)
         {
             var account = await _db.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.UserId == CurrentUserId);

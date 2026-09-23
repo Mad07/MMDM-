@@ -20,7 +20,7 @@ namespace Mark1.Controllers
             _localizer = localizer;
         }
 
-        public async Task<IActionResult> Index(DateTime? dateFrom, DateTime? dateTo, int? categoryId, int? accountId, Currency? currency, string? month)
+        public async Task<IActionResult> Index(DateTime? dateFrom, DateTime? dateTo, int? categoryId, int? accountId, Currency? currency, string? month, string? sortBy, string? sortDir)
         {
             var query = _db.Expenses
                 .Include(e => e.Category)
@@ -42,7 +42,22 @@ namespace Mark1.Controllers
             if (accountId.HasValue) query = query.Where(e => e.AccountId == accountId.Value);
             if (currency.HasValue) query = query.Where(e => e.Currency == currency.Value);
 
-            var items = await query.OrderByDescending(e => e.Date).ToListAsync();
+            // No sortBy in the URL yet -> unchanged default (most recent first). Once a column has
+            // been clicked, direction comes straight from sortDir (the view computes the toggle).
+            var effectiveSortBy = string.IsNullOrEmpty(sortBy) ? "date" : sortBy;
+            var effectiveSortDescending = string.IsNullOrEmpty(sortBy) || sortDir == "desc";
+
+            IOrderedQueryable<Expense> ordered = effectiveSortBy switch
+            {
+                "description" => effectiveSortDescending ? query.OrderByDescending(e => e.Description) : query.OrderBy(e => e.Description),
+                "category" => effectiveSortDescending ? query.OrderByDescending(e => e.Category!.Name) : query.OrderBy(e => e.Category!.Name),
+                "account" => effectiveSortDescending ? query.OrderByDescending(e => e.Account!.Name) : query.OrderBy(e => e.Account!.Name),
+                "amount" => effectiveSortDescending ? query.OrderByDescending(e => e.Amount) : query.OrderBy(e => e.Amount),
+                "paid" => effectiveSortDescending ? query.OrderByDescending(e => e.IsPaid) : query.OrderBy(e => e.IsPaid),
+                _ => effectiveSortDescending ? query.OrderByDescending(e => e.Date) : query.OrderBy(e => e.Date),
+            };
+
+            var items = await ordered.ToListAsync();
 
             var vm = new TransactionFilterViewModel<Expense>
             {
@@ -55,6 +70,8 @@ namespace Mark1.Controllers
                 AccountId = accountId,
                 Currency = currency,
                 Month = string.IsNullOrEmpty(month) ? "all" : month,
+                SortBy = effectiveSortBy,
+                SortDescending = effectiveSortDescending,
                 MonthTabs = BuildMonthTabs(_localizer),
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
@@ -87,12 +104,13 @@ namespace Mark1.Controllers
             return RedirectToAction(nameof(Deleted));
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string? returnUrl)
         {
             var settings = await _db.AppSettings.FirstOrDefaultAsync(s => s.UserId == CurrentUserId);
             var vm = new ExpenseFormViewModel
             {
                 Currency = settings?.PrimaryCurrency ?? Currency.USD,
+                ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -131,10 +149,10 @@ namespace Mark1.Controllers
             await SyncTransferIncomeAsync(expense, GetTransferTargetAccountName(model.IsTransferToSavings, model.IsTransferToRetained));
             await _db.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToLocalOrIndex(model.ReturnUrl);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string? returnUrl)
         {
             var expense = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
             if (expense == null) return NotFound();
@@ -152,6 +170,7 @@ namespace Mark1.Controllers
                 IsPaid = expense.IsPaid,
                 IsTransferToSavings = expense.IsTransferToSavings,
                 IsTransferToRetained = expense.IsTransferToRetained,
+                ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
                 AccountOptions = await GetAccountOptionsAsync()
             };
@@ -194,7 +213,7 @@ namespace Mark1.Controllers
 
             await SyncTransferIncomeAsync(expense, GetTransferTargetAccountName(model.IsTransferToSavings, model.IsTransferToRetained));
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToLocalOrIndex(model.ReturnUrl);
         }
 
         [HttpPost]
@@ -223,6 +242,31 @@ namespace Mark1.Controllers
                 expense.IsTransferToSavings = false;
                 expense.IsTransferToRetained = false;
                 await _db.SaveChangesAsync();
+            }
+            return RedirectToReferrerOrIndex();
+        }
+
+        /// <summary>Redirects to returnUrl if it's set and points at this app, otherwise Index -
+        /// used by Create/Edit so saving from a filtered/sorted list view returns to that same view
+        /// instead of always resetting to the plain unfiltered list.</summary>
+        private IActionResult RedirectToLocalOrIndex(string? returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>Same idea as RedirectToLocalOrIndex, but for actions (like Delete) whose button
+        /// lives directly on the Index page itself, so the Referer header already is that filtered
+        /// URL - no returnUrl field needed.</summary>
+        private IActionResult RedirectToReferrerOrIndex()
+        {
+            var referer = Request.Headers.Referer.ToString();
+            if (Uri.TryCreate(referer, UriKind.Absolute, out var refererUri) && refererUri.Host == Request.Host.Host)
+            {
+                return Redirect(refererUri.PathAndQuery);
             }
             return RedirectToAction(nameof(Index));
         }

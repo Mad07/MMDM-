@@ -53,6 +53,27 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.session-user {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+}
+
+.sort-link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sort-link:hover {
+  color: var(--brand-primary-dark);
+}
+
+.sort-link i {
+  font-size: 0.7rem;
+}
+
 .site-nav .nav-link {
   color: #4a4739;
   font-weight: 500;

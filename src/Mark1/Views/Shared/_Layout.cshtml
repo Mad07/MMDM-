@@ -13,22 +13,27 @@
     <header class="site-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <a class="site-header-brand" asp-controller="Home" asp-action="Index">MMDM Expense Tracker</a>
-            <div class="d-flex align-items-center gap-2">
-                <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="hidden" name="culture" value="en" />
-                    <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en" ? "active" : "")">EN</button>
-                </form>
-                <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="hidden" name="culture" value="es-CR" />
-                    <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "active" : "")">ES</button>
-                </form>
+            <div class="d-flex flex-column align-items-end gap-1">
+                <div class="d-flex align-items-center gap-2">
+                    <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <input type="hidden" name="culture" value="en" />
+                        <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en" ? "active" : "")">EN</button>
+                    </form>
+                    <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <input type="hidden" name="culture" value="es-CR" />
+                        <button type="submit" class="lang-badge @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "active" : "")">ES</button>
+                    </form>
+                </div>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-light">@Localizer["Nav_Logout"]</button>
-                    </form>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="session-user">@User.Identity.Name</span>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-light">@Localizer["Nav_Logout"]</button>
+                        </form>
+                    </div>
                 }
             </div>
         </div>
