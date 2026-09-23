@@ -35,3 +35,27 @@ document.addEventListener('change', function (event) {
         if (other) other.checked = false;
     }
 });
+
+// Inline rename UI (e.g. Settings' category/account lists): swaps a row's display view for an
+// editable form in place, no page reload until the form is actually submitted.
+document.addEventListener('click', function (event) {
+    var toggleBtn = event.target.closest('.toggle-rename');
+    if (toggleBtn) {
+        var item = toggleBtn.closest('.rename-item');
+        if (!item) return;
+        item.querySelector('.item-view').classList.add('d-none');
+        var form = item.querySelector('.item-rename-form');
+        form.classList.remove('d-none');
+        var input = form.querySelector('input[type="text"]');
+        if (input) { input.focus(); input.select(); }
+        return;
+    }
+
+    var cancelBtn = event.target.closest('.cancel-rename');
+    if (cancelBtn) {
+        var item2 = cancelBtn.closest('.rename-item');
+        if (!item2) return;
+        item2.querySelector('.item-rename-form').classList.add('d-none');
+        item2.querySelector('.item-view').classList.remove('d-none');
+    }
+});

@@ -69,6 +69,28 @@ namespace Mark1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RenameCategory(int id, string name)
+        {
+            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+            if (category != null && !string.IsNullOrWhiteSpace(name))
+            {
+                var trimmed = name.Trim();
+                var duplicate = await _db.Categories.AnyAsync(c => c.UserId == CurrentUserId && c.Id != id && c.Name.ToLower() == trimmed.ToLower());
+                if (duplicate)
+                {
+                    TempData["SettingsError"] = "A category with that name already exists.";
+                }
+                else
+                {
+                    category.Name = trimmed;
+                    await _db.SaveChangesAsync();
+                }
+            }
+            return RedirectToAction(nameof(Index), new { tab = "categories" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var category = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
