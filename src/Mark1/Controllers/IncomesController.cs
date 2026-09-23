@@ -214,7 +214,7 @@ namespace Mark1.Controllers
         }
 
         private async Task<IEnumerable<SelectListItem>> GetCategoryOptionsAsync() =>
-            (await _db.Categories.Where(c => c.UserId == CurrentUserId).OrderBy(c => c.Name).ToListAsync())
+            (await _db.Categories.Where(c => c.UserId == CurrentUserId && c.IsForIncomes).OrderBy(c => c.Name).ToListAsync())
                 .Select(c => new SelectListItem(CategoryDisplay.Localize(c.Name, _localizer), c.Id.ToString()));
 
         private async Task<IEnumerable<SelectListItem>> GetAccountOptionsAsync() =>

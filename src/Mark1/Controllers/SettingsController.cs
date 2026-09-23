@@ -57,14 +57,54 @@ namespace Mark1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCategory(string name)
+        public async Task<IActionResult> AddCategory(string name, bool isForExpenses = true, bool isForIncomes = true)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
-                _db.Categories.Add(new Category { Name = name.Trim(), UserId = CurrentUserId });
+                _db.Categories.Add(new Category
+                {
+                    Name = name.Trim(),
+                    IsForExpenses = isForExpenses || !isForIncomes,
+                    IsForIncomes = isForIncomes || !isForExpenses,
+                    UserId = CurrentUserId
+                });
                 await _db.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index), new { tab = "categories" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleCategoryExpenseUse(int id)
+        {
+            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+            if (category == null) return NotFound();
+
+            var newValue = !category.IsForExpenses;
+            if (!newValue && !category.IsForIncomes)
+            {
+                return BadRequest();
+            }
+            category.IsForExpenses = newValue;
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleCategoryIncomeUse(int id)
+        {
+            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+            if (category == null) return NotFound();
+
+            var newValue = !category.IsForIncomes;
+            if (!newValue && !category.IsForExpenses)
+            {
+                return BadRequest();
+            }
+            category.IsForIncomes = newValue;
+            await _db.SaveChangesAsync();
+            return NoContent();
         }
 
         [HttpPost]

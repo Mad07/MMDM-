@@ -75,6 +75,11 @@ namespace Mark1.Data
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Existing categories predate this split and were usable for both, so they backfill
+            // as both rather than suddenly disappearing from one side's dropdown.
+            builder.Entity<Category>().Property(c => c.IsForExpenses).HasDefaultValue(true);
+            builder.Entity<Category>().Property(c => c.IsForIncomes).HasDefaultValue(true);
+
             builder.Entity<Account>()
                 .HasOne(a => a.User)
                 .WithMany(u => u.Accounts)

@@ -334,7 +334,9 @@ namespace Mark1.Controllers
             var category = await _db.Categories.FirstOrDefaultAsync(c => c.UserId == CurrentUserId && c.Name == "Transfer");
             if (category == null)
             {
-                category = new Category { Name = "Transfer", UserId = CurrentUserId };
+                // Only ever assigned to the auto-generated Income side of a transfer - the source
+                // expense keeps whatever category the user actually picked on it.
+                category = new Category { Name = "Transfer", IsForExpenses = false, IsForIncomes = true, UserId = CurrentUserId };
                 _db.Categories.Add(category);
                 await _db.SaveChangesAsync();
             }
@@ -342,7 +344,7 @@ namespace Mark1.Controllers
         }
 
         private async Task<IEnumerable<SelectListItem>> GetCategoryOptionsAsync() =>
-            (await _db.Categories.Where(c => c.UserId == CurrentUserId).OrderBy(c => c.Name).ToListAsync())
+            (await _db.Categories.Where(c => c.UserId == CurrentUserId && c.IsForExpenses).OrderBy(c => c.Name).ToListAsync())
                 .Select(c => new SelectListItem(CategoryDisplay.Localize(c.Name, _localizer), c.Id.ToString()));
 
         private async Task<IEnumerable<SelectListItem>> GetAccountOptionsAsync() =>

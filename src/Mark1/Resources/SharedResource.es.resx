@@ -107,6 +107,8 @@
   <data name="Settings_LiveRateNow" xml:space="preserve"><value>Tipo de cambio en vivo ahora:</value></data>
   <data name="Settings_LiveRateUnavailable" xml:space="preserve"><value>no disponible - usando tipo fijo</value></data>
   <data name="Settings_ConfirmDeleteCategory" xml:space="preserve"><value>¿Eliminar esta categoría?</value></data>
+  <data name="Settings_UseForExpenses" xml:space="preserve"><value>Usable para Gastos</value></data>
+  <data name="Settings_UseForIncomes" xml:space="preserve"><value>Usable para Ingresos</value></data>
   <data name="Settings_ConfirmDeleteAccount" xml:space="preserve"><value>¿Eliminar esta cuenta?</value></data>
   <data name="Settings_ManageUsers" xml:space="preserve"><value>Gestionar Usuarios</value></data>
   <data name="Settings_NewUserEmailPlaceholder" xml:space="preserve"><value>Correo del nuevo usuario</value></data>

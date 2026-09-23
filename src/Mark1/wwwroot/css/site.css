@@ -74,6 +74,11 @@ body {
   font-size: 0.7rem;
 }
 
+.category-scope-label {
+  font-size: 0.75rem;
+  color: #8a8676;
+}
+
 .site-nav .nav-link {
   color: #4a4739;
   font-weight: 500;
