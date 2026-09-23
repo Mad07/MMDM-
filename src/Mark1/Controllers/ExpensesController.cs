@@ -112,7 +112,8 @@ namespace Mark1.Controllers
                 Currency = settings?.PrimaryCurrency ?? Currency.USD,
                 ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
-                AccountOptions = await GetAccountOptionsAsync()
+                AccountOptions = await GetAccountOptionsAsync(),
+                SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync()
             };
             return View(vm);
         }
@@ -125,9 +126,11 @@ namespace Mark1.Controllers
             {
                 model.CategoryOptions = await GetCategoryOptionsAsync();
                 model.AccountOptions = await GetAccountOptionsAsync();
+                model.SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync();
                 return View(model);
             }
 
+            var isTransferring = model.IsTransferToSavings || model.IsTransferToRetained;
             var expense = new Expense
             {
                 Description = model.Description,
@@ -141,6 +144,7 @@ namespace Mark1.Controllers
                 IsPaid = model.IsPaid,
                 IsTransferToSavings = model.IsTransferToSavings,
                 IsTransferToRetained = model.IsTransferToRetained,
+                SavingsPurposeId = isTransferring ? model.SavingsPurposeId : null,
                 UserId = CurrentUserId
             };
             _db.Expenses.Add(expense);
@@ -170,9 +174,11 @@ namespace Mark1.Controllers
                 IsPaid = expense.IsPaid,
                 IsTransferToSavings = expense.IsTransferToSavings,
                 IsTransferToRetained = expense.IsTransferToRetained,
+                SavingsPurposeId = expense.SavingsPurposeId,
                 ReturnUrl = returnUrl,
                 CategoryOptions = await GetCategoryOptionsAsync(),
-                AccountOptions = await GetAccountOptionsAsync()
+                AccountOptions = await GetAccountOptionsAsync(),
+                SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync()
             };
             return View(vm);
         }
@@ -188,6 +194,7 @@ namespace Mark1.Controllers
             {
                 model.CategoryOptions = await GetCategoryOptionsAsync();
                 model.AccountOptions = await GetAccountOptionsAsync();
+                model.SavingsPurposeOptions = await GetSavingsPurposeOptionsAsync();
                 return View(model);
             }
 
@@ -210,6 +217,7 @@ namespace Mark1.Controllers
             expense.RepeatsMonthly = model.RepeatsMonthly;
             expense.IsTransferToSavings = model.IsTransferToSavings;
             expense.IsTransferToRetained = model.IsTransferToRetained;
+            expense.SavingsPurposeId = (model.IsTransferToSavings || model.IsTransferToRetained) ? model.SavingsPurposeId : null;
 
             await SyncTransferIncomeAsync(expense, GetTransferTargetAccountName(model.IsTransferToSavings, model.IsTransferToRetained));
             await _db.SaveChangesAsync();
@@ -350,6 +358,10 @@ namespace Mark1.Controllers
         private async Task<IEnumerable<SelectListItem>> GetAccountOptionsAsync() =>
             (await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync())
                 .Select(a => new SelectListItem(AccountDisplay.Localize(a.Name, _localizer), a.Id.ToString()));
+
+        private async Task<IEnumerable<SelectListItem>> GetSavingsPurposeOptionsAsync() =>
+            (await _db.SavingsPurposes.Where(sp => sp.UserId == CurrentUserId).OrderBy(sp => sp.Name).ToListAsync())
+                .Select(sp => new SelectListItem(sp.Name, sp.Id.ToString()));
 
         internal static List<(string Value, string Label)> BuildMonthTabs(IStringLocalizer<SharedResource> localizer)
         {

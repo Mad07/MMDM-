@@ -45,6 +45,12 @@ namespace Mark1.Models
         /// Loosely coupled on purpose - no EF relationship/FK constraint against Income.</summary>
         public int? TransferIncomeId { get; set; }
 
+        /// <summary>Only meaningful when IsTransferToSavings or IsTransferToRetained is true -
+        /// what the transferred money is for, so Account Overview can break the balance down by
+        /// purpose. Cleared server-side whenever neither transfer checkbox is set.</summary>
+        public int? SavingsPurposeId { get; set; }
+        public SavingsPurpose? SavingsPurpose { get; set; }
+
         public bool RepeatsMonthly { get; set; }
 
         /// <summary>Set only on the template row when RepeatsMonthly is true; drives when the next occurrence gets generated.</summary>

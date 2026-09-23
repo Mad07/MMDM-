@@ -29,10 +29,18 @@ document.addEventListener('change', function (event) {
     }
 
     // Mutually exclusive "Transfer to Savings" / "Transfer to Retained" checkboxes on the Expense form.
-    if (checkbox.classList.contains('transfer-target-check') && checkbox.checked) {
-        var otherId = checkbox.getAttribute('data-other-target');
-        var other = otherId && document.getElementById(otherId);
-        if (other) other.checked = false;
+    if (checkbox.classList.contains('transfer-target-check')) {
+        if (checkbox.checked) {
+            var otherId = checkbox.getAttribute('data-other-target');
+            var other = otherId && document.getElementById(otherId);
+            if (other) other.checked = false;
+        }
+        var form = checkbox.closest('form');
+        var purposeGroup = form && form.querySelector('.savings-purpose-group');
+        if (purposeGroup) {
+            var anyChecked = form.querySelectorAll('.transfer-target-check:checked').length > 0;
+            purposeGroup.style.display = anyChecked ? 'block' : 'none';
+        }
     }
 });
 

@@ -23,6 +23,9 @@
     <li class="nav-item">
         <a class="nav-link @(Model.ActiveTab == "users" ? "active" : "")" asp-action="Index" asp-route-tab="users">@Localizer["Settings_ManageUsers"]</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab == "savingsPurposes" ? "active" : "")" asp-action="Index" asp-route-tab="savingsPurposes">@Localizer["Settings_ManageSavingsPurposes"]</a>
+    </li>
 </ul>
 
 @if (Model.ActiveTab == "categories")
@@ -152,6 +155,44 @@ else if (Model.ActiveTab == "users")
                             <button type="submit" class="btn btn-sm btn-outline-danger">@Localizer["Common_Delete"]</button>
                         </form>
                     }
+                </li>
+            }
+        </ul>
+    </div>
+}
+else if (Model.ActiveTab == "savingsPurposes")
+{
+    <div class="settings-panel">
+        <form asp-action="AddSavingsPurpose" method="post" class="d-flex gap-2 mb-3">
+            <input type="text" name="name" class="form-control" placeholder="@Localizer["Settings_NewSavingsPurposePlaceholder"]" required style="max-width:260px;" />
+            <button type="submit" class="btn btn-primary">@Localizer["Common_Add"]</button>
+        </form>
+        <ul class="list-group">
+            @foreach (var purpose in Model.SavingsPurposes)
+            {
+                <li class="list-group-item rename-item">
+                    <div class="d-flex justify-content-between align-items-center item-view">
+                        <span>@purpose.Name</span>
+                        <div class="d-flex gap-1">
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-icon toggle-rename" title="@Localizer["Common_Edit"]">
+                                <i class="bi bi-pencil-square"></i>
+                                <span class="visually-hidden">@Localizer["Common_Edit"]</span>
+                            </button>
+                            <form asp-action="DeleteSavingsPurpose" method="post" class="d-inline" onsubmit="return confirm('@Localizer["Settings_ConfirmDeleteSavingsPurpose"]');">
+                                <input type="hidden" name="id" value="@purpose.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="@Localizer["Common_Delete"]">
+                                    <i class="bi bi-trash"></i>
+                                    <span class="visually-hidden">@Localizer["Common_Delete"]</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <form asp-action="RenameSavingsPurpose" method="post" class="d-none item-rename-form d-flex gap-2 mt-2">
+                        <input type="hidden" name="id" value="@purpose.Id" />
+                        <input type="text" name="name" class="form-control form-control-sm" value="@purpose.Name" required />
+                        <button type="submit" class="btn btn-sm btn-primary">@Localizer["Common_Save"]</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-rename">@Localizer["Common_Cancel"]</button>
+                    </form>
                 </li>
             }
         </ul>

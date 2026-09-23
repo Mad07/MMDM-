@@ -16,6 +16,7 @@ namespace Mark1.Data
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<AppSettings> AppSettings => Set<AppSettings>();
+        public DbSet<SavingsPurpose> SavingsPurposes => Set<SavingsPurpose>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -47,6 +48,14 @@ namespace Mark1.Data
             // Existing rows predate the Paid flag and already happened, so they backfill as paid;
             // ExpenseFormViewModel defaults new Create-form expenses to unpaid instead.
             builder.Entity<Expense>().Property(e => e.IsPaid).HasDefaultValue(true);
+
+            // SetNull (not Restrict/Cascade): deleting a purpose tag shouldn't block or take the
+            // expense down with it, just clear which purpose it was tagged with.
+            builder.Entity<Expense>()
+                .HasOne(e => e.SavingsPurpose)
+                .WithMany()
+                .HasForeignKey(e => e.SavingsPurposeId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<Income>()
                 .HasOne(i => i.User)
@@ -95,6 +104,12 @@ namespace Mark1.Data
             builder.Entity<AppSettings>()
                 .HasIndex(s => s.UserId)
                 .IsUnique();
+
+            builder.Entity<SavingsPurpose>()
+                .HasOne(sp => sp.User)
+                .WithMany()
+                .HasForeignKey(sp => sp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

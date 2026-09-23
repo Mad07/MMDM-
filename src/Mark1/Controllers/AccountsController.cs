@@ -43,6 +43,7 @@ namespace Mark1.Controllers
             var incomes = await incomesQuery.ToListAsync();
 
             var accounts = await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync();
+            var purposeNames = await _db.SavingsPurposes.Where(sp => sp.UserId == CurrentUserId).ToDictionaryAsync(sp => sp.Id, sp => sp.Name);
 
             var vm = new AccountOverviewViewModel
             {
@@ -67,7 +68,7 @@ namespace Mark1.Controllers
                 var hasCrcActivity = incomes.Any(i => i.AccountId == account.Id && i.Currency == Currency.CRC)
                     || expenses.Any(e => e.AccountId == account.Id && e.Currency == Currency.CRC);
 
-                vm.AccountCards.Add(new AccountCardViewModel
+                var card = new AccountCardViewModel
                 {
                     AccountName = AccountDisplay.Localize(account.Name, _localizer),
                     NetUsd = netUsd,
@@ -75,7 +76,29 @@ namespace Mark1.Controllers
                     NetMixedUsd = netMixedUsd,
                     HasUsdActivity = hasUsdActivity,
                     HasCrcActivity = hasCrcActivity
-                });
+                };
+
+                if (account.Name == "Savings" || account.Name == "Retained")
+                {
+                    var transferredExpenses = account.Name == "Savings"
+                        ? expenses.Where(e => e.IsTransferToSavings && e.IsPaid)
+                        : expenses.Where(e => e.IsTransferToRetained && e.IsPaid);
+
+                    card.PurposeBreakdown = transferredExpenses
+                        .GroupBy(e => e.SavingsPurposeId)
+                        .Select(g => new SavingsPurposeBreakdownItem
+                        {
+                            PurposeName = g.Key.HasValue && purposeNames.TryGetValue(g.Key.Value, out var name)
+                                ? name
+                                : _localizer["Common_NoPurpose"],
+                            AmountUsd = g.Where(e => e.Currency == Currency.USD).Sum(e => e.Amount),
+                            AmountCrc = g.Where(e => e.Currency == Currency.CRC).Sum(e => e.Amount)
+                        })
+                        .OrderBy(b => b.PurposeName)
+                        .ToList();
+                }
+
+                vm.AccountCards.Add(card);
             }
 
             vm.GrandTotalUsdOnly = incomes.Where(i => i.Currency == Currency.USD).Sum(i => i.Amount)

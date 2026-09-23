@@ -71,6 +71,13 @@
         <label asp-for="IsTransferToRetained" class="form-check-label">@Localizer["Expenses_TransferToRetained"]</label>
     </div>
 
+    <div class="mb-3 savings-purpose-group" style="display:@((Model.IsTransferToSavings || Model.IsTransferToRetained) ? "block" : "none");">
+        <label asp-for="SavingsPurposeId" class="form-label">@Localizer["Expenses_SavingsPurpose"]</label>
+        <select asp-for="SavingsPurposeId" class="form-select" asp-items="Model.SavingsPurposeOptions">
+            <option value="">@Localizer["Expenses_SelectSavingsPurpose"]</option>
+        </select>
+    </div>
+
     <button type="submit" class="btn btn-primary">@Localizer["Common_Save"]</button>
     <a href="@(Model.ReturnUrl != null && Url.IsLocalUrl(Model.ReturnUrl) ? Model.ReturnUrl : Url.Action("Index"))" class="btn btn-outline-secondary">@Localizer["Common_Cancel"]</a>
 </form>

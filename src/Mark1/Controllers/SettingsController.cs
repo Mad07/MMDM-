@@ -32,6 +32,7 @@ namespace Mark1.Controllers
                 Categories = await _db.Categories.Where(c => c.UserId == CurrentUserId).OrderBy(c => c.Name).ToListAsync(),
                 Accounts = await _db.Accounts.Where(a => a.UserId == CurrentUserId).OrderBy(a => a.Name).ToListAsync(),
                 Users = await _userManager.Users.OrderBy(u => u.Email).ToListAsync(),
+                SavingsPurposes = await _db.SavingsPurposes.Where(sp => sp.UserId == CurrentUserId).OrderBy(sp => sp.Name).ToListAsync(),
                 CurrencySettings = settings
             };
 
@@ -261,6 +262,70 @@ namespace Mark1.Controllers
             settings.PrimaryCurrency = primaryCurrency;
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index), new { tab = "currency" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSavingsPurpose(string name)
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var trimmed = name.Trim();
+                var duplicate = await _db.SavingsPurposes.AnyAsync(sp => sp.UserId == CurrentUserId && sp.Name.ToLower() == trimmed.ToLower());
+                if (duplicate)
+                {
+                    TempData["SettingsError"] = "A savings purpose with that name already exists.";
+                }
+                else
+                {
+                    _db.SavingsPurposes.Add(new SavingsPurpose { Name = trimmed, UserId = CurrentUserId });
+                    await _db.SaveChangesAsync();
+                }
+            }
+            return RedirectToAction(nameof(Index), new { tab = "savingsPurposes" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RenameSavingsPurpose(int id, string name)
+        {
+            var purpose = await _db.SavingsPurposes.FirstOrDefaultAsync(sp => sp.Id == id && sp.UserId == CurrentUserId);
+            if (purpose != null && !string.IsNullOrWhiteSpace(name))
+            {
+                var trimmed = name.Trim();
+                var duplicate = await _db.SavingsPurposes.AnyAsync(sp => sp.UserId == CurrentUserId && sp.Id != id && sp.Name.ToLower() == trimmed.ToLower());
+                if (duplicate)
+                {
+                    TempData["SettingsError"] = "A savings purpose with that name already exists.";
+                }
+                else
+                {
+                    purpose.Name = trimmed;
+                    await _db.SaveChangesAsync();
+                }
+            }
+            return RedirectToAction(nameof(Index), new { tab = "savingsPurposes" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSavingsPurpose(int id)
+        {
+            var purpose = await _db.SavingsPurposes.FirstOrDefaultAsync(sp => sp.Id == id && sp.UserId == CurrentUserId);
+            if (purpose != null)
+            {
+                var inUse = await _db.Expenses.AnyAsync(e => e.SavingsPurposeId == id);
+                if (!inUse)
+                {
+                    _db.SavingsPurposes.Remove(purpose);
+                    await _db.SaveChangesAsync();
+                }
+                else
+                {
+                    TempData["SettingsError"] = "Can't delete a savings purpose that's used by existing transactions.";
+                }
+            }
+            return RedirectToAction(nameof(Index), new { tab = "savingsPurposes" });
         }
     }
 }

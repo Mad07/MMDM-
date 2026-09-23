@@ -10,6 +10,17 @@ namespace Mark1.Models.ViewModels
         public decimal NetMixedUsd { get; set; }
         public bool HasUsdActivity { get; set; }
         public bool HasCrcActivity { get; set; }
+
+        /// <summary>Only populated for accounts literally named "Savings" or "Retained" - how much
+        /// of the paid transfers into this account break down by purpose tag.</summary>
+        public List<SavingsPurposeBreakdownItem> PurposeBreakdown { get; set; } = new();
+    }
+
+    public class SavingsPurposeBreakdownItem
+    {
+        public string PurposeName { get; set; } = string.Empty;
+        public decimal AmountUsd { get; set; }
+        public decimal AmountCrc { get; set; }
     }
 
     public class AccountOverviewViewModel
